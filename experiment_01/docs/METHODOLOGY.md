@@ -1,7 +1,14 @@
 # Methodology — Can LLMs Reliably Count? (Subject–Predicate Distance in Czech Legal Text)
 
-Status: **draft v2 — design locked pending supervisor review; data downloaded and locally
-inspected; no code written yet**
+Status: **draft v3 — design locked pending supervisor review; full dataset extracted &
+checksum-manifested (all 4 KUK sub-corpora + metadata); no code written yet**
+
+v3 changes (post-review): predicate operationalized as head-of-subject (§2, *provisional — to
+confirm with linguists*); distance unit fixed to whitespace-words as the single canonical target
+across all regimes (§2, §6); OpenRouter provider/quantization pinning added (§5); CLTT QC to use the
+existing `cs_cltt` UD gold instead of hand-converting PML (§3); regime-2 to report both its CoNLL-U
+and its own distance so parse-error vs count-error can be decomposed (§5, §6); stale "single model
+per class" threat corrected (§8); corpus file/sentence counts corrected (§4).
 
 This document specifies the *science*: hypotheses, formal task definition, experimental design,
 sampling, statistical analysis plan, and validity threats. It intentionally does **not** cover
@@ -56,9 +63,8 @@ the task is too easy / not a good probe, and we'd need a harder task or longer s
 
 ## 2. Task formalization
 
-Given sentence `S = w1...wn`, let `p` = token index of the main-clause subject (`nsubj`/`csubj`
-dependent of the root or main verbal head) and `q` = token index of the predicate (the verbal head
-`p` depends on, or root in copular constructions). Distance:
+Given sentence `S = w1...wn`, let `p` = index of the main-clause subject and `q` = index of the
+predicate. Distance:
 
 ```
 d = |p − q| − 1
@@ -67,6 +73,32 @@ d = |p − q| − 1
 (count of tokens strictly between them, linear surface order — not tree depth). This is a
 deliberately narrow, objectively scoreable proxy for the broader class of SPRINT "counting" rules
 (§ 39 odst. 2 paragraph limits, future cognitive-complexity metrics based on reference nesting).
+
+**Operationalizing subject and predicate (provisional — to be confirmed with linguist colleagues).**
+- **Subject** = the `nsubj` dependent of the sentence root; `p` is its token index.
+- **Predicate** = the **head token of that subject** (`q = head(p)`), *whatever its part of speech*.
+  This is chosen deliberately: it is exactly the head–dependent pair the dependency-distance
+  literature (§7.5, Gao & He 2024) measures, it is fully deterministic (read the `nsubj` row, follow
+  its `HEAD`), and it handles **copular/nominal predicates for free** — in UD, "Petr *je* učitel"
+  attaches `nsubj(Petr → učitel)` with `je` as a `cop` child of the nominal root `učitel`, so
+  head-of-subject = `učitel`, i.e. the Czech *jmenná část přísudku*. We additionally **log the
+  copula token index** as a secondary field so the alternative (measure-to-copula) can be checked
+  post hoc without re-running.
+- **`csubj` (clausal subject): excluded from the primary set, count logged.** A clausal subject has
+  no single well-defined position (which of its tokens is `p`?); reporting these separately is
+  cleaner than inventing a convention.
+
+**Distance unit — whitespace-words, canonical across all three regimes.** A "token" for the metric
+is a whitespace-delimited run of characters (word), **not** a CoNLL-U/UD token. Rationale: (a) it is
+the human- and SPRINT-meaningful unit; (b) it is the only unit a model can be asked to count on
+*raw text* (regime 1) without being handed a tokenization standard it can't see — measuring against
+UD-token distance there would score tokenization-convention mismatch as "counting error." The silver
+gold (`p`, `q`, `d`) is therefore **recomputed in whitespace-word units** by mapping each UD token
+to its containing word via the CoNLL-U `TokenRange` character offsets (a concrete `extract_pairs.py`
+subtask; note UD splits punctuation into its own tokens, so UD-token distance ≠ word distance).
+**All three regimes are scored against this same word-distance gold** — in regimes 2/3 the CoNLL-U
+is a reasoning aid, but the question asked is always "how many words lie strictly between subject and
+predicate," so H1 compares like against like rather than across different targets.
 
 **Why subject–predicate distance, specifically (not an arbitrary choice of metric)**: dependency
 distance is an established syntactic-complexity / working-memory-load marker in the
@@ -94,11 +126,17 @@ scientific consequence worth foregrounding rather than burying:
 > that is linguistically right where UDPipe is wrong would score as "wrong."
 
 This is an acceptable and common simplification for silver-standard benchmarks, **but**:
-- We should still run UDPipe against **CLTT 2.0** (existing manual gold treebank) as a
-  **parser-quality control** — this doesn't require new annotation, CLTT is already
-  human-annotated. This gives us an independent estimate of "how much should we trust UDPipe's
-  nsubj identification and distance computation on legal-register Czech" and lets us put an error
-  bar / caveat on the whole silver-only benchmark rather than presenting it as unqualified truth.
+- We should still use an **existing manual gold legal treebank** as a **parser-quality control** —
+  this doesn't require new annotation. This gives us an independent estimate of "how much should we
+  trust UDPipe's nsubj identification and distance computation on legal-register Czech" and lets us
+  put an error bar / caveat on the whole silver-only benchmark rather than presenting it as
+  unqualified truth. **Preferred gold source: the existing `cs_cltt` UD treebank** (Universal
+  Dependencies), which is already CoNLL-U — so gold `nsubj`/head/distance extract with the *same*
+  code as KUK, and we avoid hand-converting CLTT 2.0's PML via `udapi` (which would add its own
+  PDT→UD mapping noise onto the very noise-floor estimate we're trying to make). **To verify before
+  relying on it**: that `cs_cltt` derives from CLTT 2.0's sentences and hasn't materially diverged;
+  if it has, fall back to the PML→`udapi` route. (The Grok literature review conflated CLTT 2.0 with
+  `cs_cltt` — they are related but not identical resources.)
 - This CLTT-based noise-floor estimate is **in scope now** (it's not new annotation, just running
   UDPipe against an existing resource) — recommend keeping it in Phase 0/1 even though we're
   deferring new human annotation of KUK.
@@ -129,19 +167,23 @@ were two versions of KUK to compare raw-vs-annotated — this was a misreading):
   already folded into KUK 1.0's `KUKY/` subdirectory — no separate download needed.
 
 **Verified corpus facts (from local inspection):**
-- **KUK 1.0**: CC BY-NC-SA 4.0 license. ~10,000 `.conllu` files, **~450,000 sentences** total
-  across FrBo/ESO/OmbuFlyers/KUKY. Parses confirmed genuine UD-standard CoNLL-U (UDPipe 2,
+- **KUK 1.0**: CC BY-NC-SA 4.0 license. **6,275 `.conllu` files, ~910,000 sentences** total across
+  all four sub-corpora (ESO 5,615 files / FrBo 319 / KUKY 224 / OmbuFlyers 117). *(Full archive
+  re-extracted and verified against the zip on 2026-07-01 — an earlier partial extraction had only
+  3 of 4 sub-corpora, no `metadata/`, and ~3,244 files / ~450k sentences; the sampling design in this
+  section depends on all four being present, so this is now fixed. See `data/CHECKSUMS.md`.)* Parses
+  confirmed genuine UD-standard CoNLL-U (UDPipe 2,
   `czech-pdt-ud-2.15` model, plus NameTag 3 NE tags), with proper `nsubj`/`root` dependency labels
   — directly usable for extraction without conversion. Already visible in spot-checked files:
   realistic legal-text messiness (sentence-boundary detection errors on case-number headers,
   hyphenation artifacts) — useful motivating evidence for the paper's premise.
-- **CLTT 2.0**: **not CoNLL-U** — it's PML (Prague Markup Language, PDT-style, separate w/m/a/t
-  layers), with additional `treex` (Treex format) and `json` exports. Only ~17–18 documents (much
-  smaller, as expected for a manually annotated gold resource). **This means Phase 2 (UDPipe vs.
-  CLTT parser-quality control) requires a conversion/reading step** (e.g. via `udapi`, which reads
-  PML natively, or the `.treex.gz` files) before we can compute comparable nsubj-F1/distance
-  agreement — a small added engineering task, not a blocker, but worth planning for explicitly
-  rather than assuming CLTT is already CoNLL-U.
+- **CLTT 2.0** (the LINDAT download): **not CoNLL-U** — it's PML (Prague Markup Language, PDT-style,
+  separate w/m/a/t layers), with additional `treex` (Treex format) and `json` exports (286 files, of
+  which 51 `.w`/`.m`/`.a` layer files + 17 `.treex.gz`), much smaller as expected for a manually
+  annotated gold resource. **For the Phase 2 parser-QC step we prefer the existing `cs_cltt` UD
+  treebank** (already CoNLL-U — see §3), which sidesteps a PML conversion entirely; converting this
+  PML download via `udapi`/`.treex.gz` is the fallback only if `cs_cltt` turns out not to match CLTT
+  2.0's sentences.
 
 **Sentence filtering criteria** (deterministic, applied to KUK's silver parses — since we have no
 gold yet, filtering must be self-consistent from UDPipe's own output):
@@ -209,6 +251,19 @@ chosen models is known:
   metric (§6), not the core role/distance metrics that use all runs pooled per condition.
 - All prompts in Czech, temperature 0, identical 2–3 few-shot legal examples across
   regimes/models/model_ids for comparability.
+- **Pin the OpenRouter provider and quantization, not just the model slug.** A slug (e.g.
+  `meta-llama/llama-3.1-70b-instruct`) is served by multiple upstream providers at different
+  quantizations (fp16/fp8/int4); left unpinned, OpenRouter routes per call by price/latency, which
+  (a) confounds the `run`-consistency metric (variance may be provider-switching, not model
+  non-determinism), (b) breaks reproducibility, and (c) muddies H2 (an fp8 "large" model is a
+  different artifact than fp16). Send an explicit `provider` list with `allow_fallbacks: false` and
+  a quantization constraint, and **record the actual provider + quantization returned for every
+  call**.
+- **Regime 2 output spec**: the model returns **both** its self-generated CoNLL-U **and** its own
+  word-distance answer. We score its reported distance *and* deterministically recompute distance
+  from its emitted CoNLL-U — the two together decompose regime-2 error into *parse error* vs
+  *counting-given-own-parse error* (see §6). Requires a **tolerant CoNLL-U parser**, since malformed
+  output is a tracked failure mode (§6).
 
 **Why within-sentence (paired) design**: lets us use paired statistical tests (e.g. McNemar for
 role-F1 binary correctness, paired comparisons for distance error) with much higher power than an
@@ -236,6 +291,11 @@ directly rather than only through stratification.
   confounds we've named up front rather than discovering them post hoc.
 - Consistency: within (sentence × regime × model) triplet of 3 runs, report % with zero variance
   and mean stddev — a secondary, simpler descriptive statistic alongside the regression.
+- **Regime-2 error decomposition**: compare the model's *reported* distance against distance
+  *recomputed deterministically from its own emitted CoNLL-U*. Agreement isolates "counting given
+  own parse"; the recomputed-vs-silver gap isolates "parse quality." This separates whether regime-2
+  failures come from bad self-parsing or from bad counting over a correct parse — directly informative
+  for the SPRINT hybrid recommendation.
 - Error taxonomy (qualitative, on a sample of failures): wrong clause attachment, off-by-one,
   multi-word-term tokenization mismatch, hallucinated/malformed CoNLL-U, other.
 - Report effect sizes (not just p-values) given this is a short paper aimed at an actionable
@@ -304,10 +364,11 @@ confirmed as an accepted, non-withdrawn paper.
 
 - **Silver-as-truth circularity** (§3) — mitigated by CLTT-based noise-floor estimate, explicitly
   flagged as a limitation, deferred human validation available on trigger.
-- **Single model per size class** — a specific model's quirks may not generalize to "all small
-  models" / "all large models." We should name this explicitly rather than overclaim; if budget
-  allows a second model per class late in the process, that would strengthen the size-effect
-  claim, but it's not required for a valid narrow claim about the two models actually tested.
+- **Limited models per size class** — we use ≥2 models per class (§5), which guards against
+  single-vendor quirks, but "small" and "large" are still each represented by a handful of specific
+  models. Claims generalize to *the models tested*, not to "all small/large models" in the abstract;
+  state this rather than overclaim. Provider/quantization is pinned and logged (§5) so a given
+  `model_id` is a fixed artifact.
 - **Filtering criteria depend on UDPipe itself** — sentences UDPipe parses "cleanly enough" to pass
   our filter may be a biased (easier) subset; report the exclusion rate and reasons transparently.
 - **Proxy-task generalization** — success/failure on subject–predicate distance doesn't
@@ -334,7 +395,9 @@ All open items from the previous pass are now resolved:
 5. **Comprehensibility linkage**: added directly in §2 (subject–predicate distance as an instance
    of the established dependency-distance/working-memory-load literature, citing Gao & He 2024 from
    §7.5) — no separate SPRINT-rule citations needed beyond what's already in §2/§7.5.
-6. **CLTT PML conversion**: no existing UFAL-internal tool identified — proceed with `udapi`.
+6. **CLTT QC gold**: use the existing `cs_cltt` UD treebank (already CoNLL-U) as the parser-QC gold
+   rather than hand-converting CLTT 2.0's PML via `udapi` — pending a quick check that `cs_cltt`
+   derives from CLTT 2.0 and hasn't diverged; `udapi`/PML is the fallback only if it has (§3).
 
 Data is downloaded, checksum-verified, and extracted locally
 (`experiment_01/data/raw/KUK_1.0/`, `experiment_01/data/raw/cltt_2.0/`). Design is ready for the

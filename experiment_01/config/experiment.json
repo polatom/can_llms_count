@@ -1,0 +1,51 @@
+{
+  "_comment": "Run config for run_llm.py. Roster: family-matched, all-open (2 families x 2 sizes) for a clean within-family H2/H3 size effect. Provider + quantization PINNED per model (verified 2026-07-01 via OpenRouter /endpoints): all fp8 so quantization is held constant across the size comparison (removes it as an H2 confound), allow_fallbacks=false. qwen-7b uses Together (only fp8 option; Phala rate-limited us). Prices are the real fp8 per-1M rates from /endpoints; authoritative per-call cost still comes from response usage.cost.",
+  "temperature": 0,
+  "n_runs": 3,
+  "max_tokens": 2048,
+  "workers": 8,
+  "max_retries": 5,
+  "retry_base_seconds": 2,
+  "models": [
+    {
+      "model_id": "llama-8b",
+      "slug": "meta-llama/llama-3.1-8b-instruct",
+      "family": "llama",
+      "size": "small",
+      "provider": "DeepInfra",
+      "quantization": "fp8",
+      "price_in": 0.02,
+      "price_out": 0.03
+    },
+    {
+      "model_id": "llama-70b",
+      "slug": "meta-llama/llama-3.3-70b-instruct",
+      "family": "llama",
+      "size": "large",
+      "provider": "DeepInfra",
+      "quantization": "fp8",
+      "price_in": 0.10,
+      "price_out": 0.32
+    },
+    {
+      "model_id": "qwen-7b",
+      "slug": "qwen/qwen-2.5-7b-instruct",
+      "family": "qwen",
+      "size": "small",
+      "provider": "Together",
+      "quantization": "fp8",
+      "price_in": 0.30,
+      "price_out": 0.30
+    },
+    {
+      "model_id": "qwen-72b",
+      "slug": "qwen/qwen-2.5-72b-instruct",
+      "family": "qwen",
+      "size": "large",
+      "provider": "DeepInfra",
+      "quantization": "fp8",
+      "price_in": 0.36,
+      "price_out": 0.40
+    }
+  ]
+}

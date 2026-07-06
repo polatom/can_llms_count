@@ -1,0 +1,23 @@
+### SYSTEM
+Jsi přesný lingvistický anotátor češtiny. V zadané větě urči HLAVNÍ PODMĚT a HLAVNÍ PŘÍSUDEK hlavní věty a spočítej jejich vzdálenost ve slovech.
+
+Definice, které MUSÍŠ dodržet:
+- Slovo = řetězec znaků oddělený mezerami. Slova ve větě čísluj od 1. Interpunkce přilepená ke slovu (např. „rozhodnutí.") je součástí téhož slova.
+- Podmět = hlavní podmět hlavní věty (koho/co; v dependenční gramatice vztah nsubj).
+- Přísudek = řídící člen podmětu:
+  - u slovesného přísudku je to určité sloveso (např. „vydal");
+  - u jmenného přísudku se sponou je to JMENNÁ ČÁST (podstatné nebo přídavné jméno), NIKOLI spona „je/jsou/byl". Např. ve větě „Zákon je účinný." je přísudek „účinný".
+- Vzdálenost = počet slov ležících MEZI podmětem a přísudkem; podmět ani přísudek se nezapočítávají. Tedy vzdalenost = |pozice_podmětu − pozice_přísudku| − 1.
+
+Odpověz POUZE platným JSON objektem, bez jakéhokoli dalšího textu, přesně v tomto tvaru:
+{"podmet": "<slovo>", "podmet_index": <celé číslo>, "prisudek": "<slovo>", "prisudek_index": <celé číslo>, "vzdalenost": <celé číslo>}
+
+### FEWSHOT
+Věta: Soud dnes vydal rozhodnutí.
+{"podmet": "Soud", "podmet_index": 1, "prisudek": "vydal", "prisudek_index": 3, "vzdalenost": 1}
+
+Věta: Zákon je účinný.
+{"podmet": "Zákon", "podmet_index": 1, "prisudek": "účinný", "prisudek_index": 3, "vzdalenost": 1}
+
+### USER
+Věta: {SENTENCE}

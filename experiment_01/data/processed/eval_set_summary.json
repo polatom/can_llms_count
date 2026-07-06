@@ -1,0 +1,126 @@
+{
+  "seed": 20260701,
+  "per_stratum": 40,
+  "balance_subcorpus": true,
+  "n_sample": 640,
+  "n_population": 415462,
+  "skipped_unbucketed": 0,
+  "n_strata_nonempty": 16,
+  "sample_distance": {
+    "min": 0,
+    "median": 4.5,
+    "mean": 6.08,
+    "max": 42
+  },
+  "sample_length": {
+    "min": 5,
+    "median": 24.5,
+    "mean": 27.72,
+    "max": 79
+  },
+  "by_subcorpus": {
+    "OmbuFlyers": 160,
+    "KUKY": 160,
+    "FrBo": 160,
+    "ESO": 160
+  },
+  "copular_frac": 0.25,
+  "strata": [
+    {
+      "length": "15-24",
+      "distance": "0-1",
+      "available": 76573,
+      "sampled": 40
+    },
+    {
+      "length": "15-24",
+      "distance": "10-+",
+      "available": 8651,
+      "sampled": 40
+    },
+    {
+      "length": "15-24",
+      "distance": "2-4",
+      "available": 41614,
+      "sampled": 40
+    },
+    {
+      "length": "15-24",
+      "distance": "5-9",
+      "available": 21600,
+      "sampled": 40
+    },
+    {
+      "length": "25-39",
+      "distance": "0-1",
+      "available": 52560,
+      "sampled": 40
+    },
+    {
+      "length": "25-39",
+      "distance": "10-+",
+      "available": 10765,
+      "sampled": 40
+    },
+    {
+      "length": "25-39",
+      "distance": "2-4",
+      "available": 28243,
+      "sampled": 40
+    },
+    {
+      "length": "25-39",
+      "distance": "5-9",
+      "available": 16327,
+      "sampled": 40
+    },
+    {
+      "length": "40-80",
+      "distance": "0-1",
+      "available": 20901,
+      "sampled": 40
+    },
+    {
+      "length": "40-80",
+      "distance": "10-+",
+      "available": 6352,
+      "sampled": 40
+    },
+    {
+      "length": "40-80",
+      "distance": "2-4",
+      "available": 10495,
+      "sampled": 40
+    },
+    {
+      "length": "40-80",
+      "distance": "5-9",
+      "available": 6477,
+      "sampled": 40
+    },
+    {
+      "length": "5-14",
+      "distance": "0-1",
+      "available": 63943,
+      "sampled": 40
+    },
+    {
+      "length": "5-14",
+      "distance": "10-+",
+      "available": 1232,
+      "sampled": 40
+    },
+    {
+      "length": "5-14",
+      "distance": "2-4",
+      "available": 36515,
+      "sampled": 40
+    },
+    {
+      "length": "5-14",
+      "distance": "5-9",
+      "available": 13214,
+      "sampled": 40
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "n_files": 6275,
+  "n_sentences": 910373,
+  "n_pass": 415462,
+  "pass_rate": 0.4564,
+  "word_count_mismatch_among_candidates": 0,
+  "exclusion_reasons": {
+    "no_subject": 401426,
+    "csubj_only": 72356,
+    "multiple_main_subjects": 14312,
+    "length_out_of_bounds": 6790,
+    "subj_pred_same_word": 27
+  },
+  "by_subcorpus": {
+    "ESO": {
+      "total": 844118,
+      "pass": 388953,
+      "pass_rate": 0.4608
+    },
+    "FrBo": {
+      "total": 32378,
+      "pass": 13167,
+      "pass_rate": 0.4067
+    },
+    "KUKY": {
+      "total": 21610,
+      "pass": 8674,
+      "pass_rate": 0.4014
+    },
+    "OmbuFlyers": {
+      "total": 12267,
+      "pass": 4668,
+      "pass_rate": 0.3805
+    }
+  },
+  "exclusion_examples": {
+    "no_subject": [
+      {
+        "sent_id": "1",
+        "text": "V Brně dne 29. března 2011"
+      },
+      {
+        "sent_id": "2",
+        "text": "Sp. zn.: 597/2011/VOP/EV"
+      },
+      {
+        "sent_id": "3",
+        "text": "Zpráva o šetření z vlastní iniciativy"
+      }
+    ],
+    "csubj_only": [
+      {
+        "sent_id": "22",
+        "text": "Podobnou filozofii lze nalézt např. v nálezu Ústavního soudu ze dne 23. 2. 2010, sp. zn. II ÚS 1612/09."
+      },
+      {
+        "sent_id": "23",
+        "text": "Z důvodů právě uvedených je třeba postup ministerstev a jiných ústředních správních úřadů při předběžném posouzení nároku chápat jako výkon veřejné správy sui g"
+      },
+      {
+        "sent_id": "34",
+        "text": "Cílem místního šetření bylo seznámit se s praxí ministerstva při vyřizování konkrétních žádostí o odškodnění, a to jednak rozhovorem se zaměstnanci odboru územn"
+      }
+    ],
+    "length_out_of_bounds": [
+      {
+        "sent_id": "24",
+        "text": "Ochránce má za to, že pokud povinný správci daně doloží (například posledními třemi výpisy z účtu), že mu na účet nejsou poukazovány jiné příjmy, než ty, které "
+      },
+      {
+        "sent_id": "240",
+        "text": "Je pokoj dostatečně vybaven?"
+      },
+      {
+        "sent_id": "458",
+        "text": "Mají zaměstnanci možnost supervize?"
+      }
+    ],
+    "multiple_main_subjects": [
+      {
+        "sent_id": "55",
+        "text": "Pochybení, která ochránce magistrátu vytkl ve zprávě o šetření, magistrát odmítl."
+      },
+      {
+        "sent_id": "16",
+        "text": "B.1 Vyjádření ke zjištěním (1) a (2) Úvodem ministr s odkazem na judikaturu správních soudů uvádí, že v řízení o žádosti o přezkoumání výsledku maturitní zkoušk"
+      },
+      {
+        "sent_id": "97",
+        "text": "Soukromí, důstojnost a ochrana před špatným zacházením Plnění výsledků bylo zahájeno (Z) 5."
+      }
+    ],
+    "subj_pred_same_word": [
+      {
+        "sent_id": "1228",
+        "text": "Rozhoduje-li soud o úpravě práv k dětem, 78musí dbát principu nejlepšího zájmu dítěte a měl by rozhodnout zpravidla v řádu měsíců."
+      },
+      {
+        "sent_id": "190",
+        "text": "openDocument&Highlight=0."
+      },
+      {
+        "sent_id": "200",
+        "text": "​ED8?openDocument&Highlight=0,."
+      }
+    ]
+  },
+  "params": {
+    "min_words": 5,
+    "max_words": 80
+  }
+}

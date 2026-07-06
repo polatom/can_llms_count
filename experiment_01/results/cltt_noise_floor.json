@@ -1,0 +1,24 @@
+{
+  "udpipe_model": "czech-pdt-ud-2.15-241121",
+  "gold_passing": 740,
+  "udpipe_also_clean_pair": 295,
+  "coverage": 0.3986,
+  "no_pair_reasons": {
+    "udpipe_segmented_2": 407,
+    "udpipe_segmented_3": 29,
+    "udpipe_segmented_5": 1,
+    "udpipe_no_clean_pair": 3,
+    "udpipe_segmented_4": 2,
+    "udpipe_segmented_7": 1,
+    "udpipe_segmented_6": 1,
+    "udpipe_segmented_10": 1
+  },
+  "on_shared_pairs": {
+    "subject_word_agreement": 1.0,
+    "predicate_word_agreement": 0.9932,
+    "both_roles_agreement": 0.9932,
+    "distance_exact_agreement": 0.9932,
+    "distance_within1_agreement": 0.9932,
+    "distance_mae": 0.136
+  }
+}

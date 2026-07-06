@@ -1,0 +1,340 @@
+% This must be in the first 5 lines to tell arXiv to use pdfLaTeX, which is strongly recommended.
+\pdfoutput=1
+\documentclass[11pt]{article}
+
+% Change "review" to "final" to generate the final (camera-ready) version.
+\usepackage[review]{acl}
+
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+
+\title{Can Large Language Models Count in Legal Czech? \\
+Subject--Predicate Distance as a Probe of LLM Reliability for \\
+Rule-Based Legislative Drafting Support}
+
+\author{Anonymous submission}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Tools that support legislative drafting increasingly need to check \emph{structural} rules---limits
+on paragraph counts, on cross-reference nesting, or on other measurable properties of a sentence.
+We ask whether large language models (LLMs) can serve as the engine for such rules, using a narrow,
+objectively scoreable proxy: identifying the main subject (\emph{podm\v{e}t}) and predicate
+(\emph{p\v{r}\'{i}sudek}) of a Czech legal sentence and counting the linear word-distance between
+them. We evaluate two family-matched open model pairs (Llama-3.1-8B / Llama-3.3-70B and
+Qwen-2.5-7B / Qwen-2.5-72B) under three prompting regimes---raw text, self-generated CoNLL-U, and
+gold CoNLL-U supplied---on a stratified sample of 640 sentences from the KUK~1.0 corpus, each run
+three times at temperature~0 (23{,}040 generations). Structure helps and larger models are better,
+but no configuration is reliable: the best condition---the 72B model \emph{handed} the gold
+parse---is still only 65\% exact. A decomposition shows the residual failure is \emph{counting},
+not structure-reading: given the parse the large models name the correct subject and predicate
+83--87\% of the time, yet even when they name both words correctly they still miscount the distance
+28--36\% of the time; the small models miscount almost always. The instability is
+severe (up to 56\% of triplets vary run-to-run even at temperature~0 with a pinned provider) and
+majority voting does not fix it. A parser-quality control against a human gold treebank shows the
+silver oracle agrees with humans 99.3\% on the labels, so these failures are real. We conclude that
+structural drafting rules should be implemented as deterministic extractors over a dependency parse
+($\approx$99\% accurate and zero-variance) rather than as LLM prompts.
+\end{abstract}
+
+\section{Introduction}
+
+Software that assists in drafting or reviewing legislation is beginning to encode explicit
+\emph{rules} for text quality. Some of these rules are semantic (``is this provision unnecessarily
+convoluted?''); others are \emph{structural} and involve exact measurement---e.g. a limit on the
+number of paragraphs per section, on the nesting depth of cross-references, or on other
+complexity metrics derived from sentence structure. A natural implementation question is whether a
+single LLM prompt can serve as the engine for both kinds of rules, or whether structural rules
+require a different mechanism.
+
+Independently, a growing body of work shows that LLMs are unexpectedly unreliable at \emph{exact
+counting}. Performance swings by large margins with tokenization \citep{zhang2024counting}, models
+fail at seemingly trivial character counts \citep{fu2024count}, and counting has been proposed as a
+minimal probe of rule-following reliability \citep{dai2026rulefollowing}. If LLMs cannot reliably
+count in a controlled setting, they are a poor foundation for counting-based drafting rules.
+
+We make this concrete with a deliberately narrow task in Czech legal text: given a sentence,
+identify its main-clause subject and predicate and compute the number of words that lie between
+them. The task is a proxy---not a drafting rule itself---but it is objectively scoreable, it is
+directly tied to an established syntactic-complexity measure (dependency distance;
+\citealp{gao2024dependency}), and it isolates counting from heavy semantics. We use it to answer
+three questions: (RQ1)~can LLMs identify the subject/predicate pair? (RQ2)~can they count the
+distance? (RQ3)~does supplying explicit syntactic structure (a CoNLL-U parse) help, and does the
+effect depend on model size?
+
+Our contributions are: (i)~a fully reproducible, provider-pinned evaluation of four open models
+across three prompting regimes on 640 stratified legal sentences; (ii)~a decomposition separating
+\emph{role identification} from \emph{counting}, which reframes the ``can LLMs count'' question;
+(iii)~a quantification of run-to-run instability and a demonstration that majority voting does not
+remedy it; (iv)~a parser-quality control against a human gold treebank establishing that the
+silver oracle is trustworthy on the labels; and (v)~a concrete recommendation for structural
+drafting rules. Code, prompts, the sampled evaluation set, and all model traces are released.
+
+\section{Related Work}
+
+\paragraph{LLM counting and rule-following.} \citet{zhang2024counting} show tokenization alone
+causes large accuracy swings on counting; \citet{fu2024count} document persistent failures on
+character counting. \citet{dai2026rulefollowing} frame stable counting as a minimal probe of
+rule-following reliability. Our task instantiates this probe on natural legal text with a
+linguistically motivated target.
+
+\paragraph{Structured input for parsing-like tasks.} \citet{ginn2025llm} show that supplying
+symbolic/in-context rules improves LLM zero-shot dependency parsing, with the benefit shrinking as
+more examples are added. Our regimes 2 and 3 (self-generated vs.\ supplied CoNLL-U) test the analogous
+question for a structural measurement task.
+
+\paragraph{Dependency distance as complexity.} Linear distance between a syntactic head and its
+dependent is an established metric of syntactic complexity and working-memory load
+\citep{gao2024dependency,liang2007dependency}. Subject--predicate distance is arguably the single
+most load-bearing instance, which grounds our metric as more than an ad-hoc token count and ties it
+to the comprehensibility concerns of legislative drafting.
+
+\paragraph{Czech legal NLP resources.} We use the KUK~1.0 corpus of Czech legal/administrative text
+\citep{hladka2024kuk}, parsed with UDPipe~2 \citep{straka2018udpipe} into Universal Dependencies
+\citep{nivre2020ud}, and the Czech Legal Text Treebank \citep{kriz2018cltt} (via its UD conversion)
+as a human-gold parser-quality reference.
+
+\section{Task and Data}
+
+\subsection{Task formalization}
+Given a sentence, let $p$ be the position of the main-clause subject and $q$ the position of the
+predicate. The distance is
+\begin{equation}
+d = |p - q| - 1,
+\end{equation}
+the number of tokens strictly between them in linear order (not tree depth). We operationalize the
+\textbf{subject} as the single \texttt{nsubj}/\texttt{nsubj:pass} dependent of the sentence root,
+and the \textbf{predicate} as the head of that subject---i.e.\ the root---whatever its part of
+speech. This handles copular clauses correctly and matches the head--dependent pair that the
+dependency-distance literature measures: in \emph{``Z\'{a}kon je \'{u}\v{c}inn\'{y}''} (``The law is
+effective'') the predicate is the nominal/adjectival part \emph{\'{u}\v{c}inn\'{y}}, with the copula
+\emph{je} recorded separately.\footnote{This choice is provisional pending confirmation by a
+linguist; the copula index is logged so the alternative is recoverable without re-running.}
+
+Crucially, distance is counted in \textbf{whitespace-delimited words}, not CoNLL-U tokens. This is
+the human-meaningful unit and the only unit a model can count on raw text without being handed a
+tokenization standard; punctuation glued to a word and Czech split-tokens (e.g.\ \emph{aby}
+$\rightarrow$ \emph{aby}+\emph{by}) each count as one word. We map UDPipe's tokens to words using
+the CoNLL-U character offsets, so gold and model answers are commensurable in every regime.
+
+\subsection{Data}
+KUK~1.0 \citep{hladka2024kuk} contains four sub-corpora of Czech legal/administrative text
+(ombudsman opinions, Frank Bold materials, ombudsman information flyers, and mixed advice texts),
+with silver UD parses from UDPipe~2 (\texttt{czech-pdt-ud-2.15}) and named-entity tags from NameTag~3
+\citep{strakova2019nametag}. It comprises 6{,}275 CoNLL-U files and 910{,}373 sentences. We treat
+UDPipe's parse as the silver gold; \S\ref{sec:noisefloor} quantifies how far this can be trusted.
+
+\paragraph{Filtering.} We keep sentences with exactly one root, exactly one root-attached
+\texttt{nsubj} (no coordinated/clausal subjects, no multiple finite clauses), and word length in
+$[5,80]$. This retains \textbf{415{,}462 / 910{,}373 (45.6\%)} sentences, consistently across
+sub-corpora---itself a descriptive statistic about how often ``simple'' subject--predicate
+structures occur in legal Czech.
+
+\paragraph{Evaluation sample.} From the filtered pool we draw a stratified sample of
+\textbf{N=640}, crossing four sentence-length buckets with four distance buckets ($4\times4$) and
+allocating an \emph{equal} 40 sentences per stratum. This deliberately over-samples the long/far
+tail (population median distance is~1; sample median is 4.5), where difficulty concentrates. The
+draw is balanced across the four sub-corpora (160 each) so results are not implicitly a claim about
+one genre, and is fully seeded for reproducibility.
+
+\section{Experimental Setup}
+
+\paragraph{Regimes.} Each sentence is presented under three regimes: (1)~\textbf{raw text}---the
+model reads the sentence and returns subject, predicate, and distance; (2)~\textbf{self-CoNLL-U}---the
+model first emits its own CoNLL-U parse, then the answer; (3)~\textbf{CoNLL-U given}---the model is
+handed UDPipe's parse and only needs to locate \texttt{nsubj}, follow its head, and count. All
+prompts are in Czech with two few-shot examples (one verbal, one copular) identical across regimes.
+
+\paragraph{Models.} We use two family-matched pairs so size is manipulated within an architecture:
+Llama-3.1-8B and Llama-3.3-70B \citep{dubey2024llama}, and Qwen-2.5-7B and Qwen-2.5-72B
+\citep{qwen2025}. All are served at fp8 through a single pinned provider per model, so quantization
+is held constant and the run is reproducible.
+
+\paragraph{Protocol and metrics.} Each (sentence $\times$ regime $\times$ model) cell is run three
+times at temperature~0, one sentence per call---23{,}040 generations. We report: format validity
+(a parseable answer); \emph{role identification} (subject/predicate word-index match); \emph{distance}
+exact-match, $\pm1$, $\pm2$, and MAE; and \emph{consistency} (fraction of 3-run triplets that are
+identical). Full request/response traces, including the provider-reported per-call cost, are stored;
+the total run cost was USD~7.73.
+
+\section{Results}
+
+\begin{table}[t]
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llrrr}
+\toprule
+\textbf{Model} & \textbf{Regime} & \textbf{Exact} & \textbf{$\pm1$} & \textbf{Pos.} \\
+\midrule
+Llama-8B  & raw          & 8.0  & 29.5 & 5.2  \\
+          & self-CoNLL-U & 8.2  & 40.7 & 18.0 \\
+          & CoNLL-U given& 4.2  & 51.6 & 35.4 \\
+\addlinespace
+Qwen-7B   & raw          & 7.4  & 20.3 & 2.8  \\
+          & self-CoNLL-U & 12.2 & 42.8 & 21.3 \\
+          & CoNLL-U given& 23.9 & 51.5 & 32.1 \\
+\addlinespace
+Llama-70B & raw          & 20.9 & 42.7 & 10.6 \\
+          & self-CoNLL-U & 26.1 & 43.8 & 20.1 \\
+          & CoNLL-U given& \textbf{59.6} & 67.5 & 50.8 \\
+\addlinespace
+Qwen-72B  & raw          & 25.3 & 49.4 & 15.5 \\
+          & self-CoNLL-U & 39.1 & 56.3 & 32.0 \\
+          & CoNLL-U given& \textbf{64.9} & 71.1 & 51.6 \\
+\bottomrule
+\end{tabular}
+\caption{Distance exact-match, $\pm1$-tolerance, and \textbf{Pos.}\ (both subject and predicate
+reported at their correct word position) (\%), by model and regime, over 640 sentences $\times$ 3
+runs. \S\ref{sec:decomp} separates \emph{naming} the right words from \emph{positioning} them.
+Format validity was $\geq$93\% throughout ($\geq$99\% except Llama-8B self-CoNLL-U).}
+\label{tab:main}
+\end{table}
+
+Table~\ref{tab:main} presents the main results. We organize the discussion around four hypotheses.
+
+\paragraph{H1: structure helps.} Exact-match rises from raw to CoNLL-U-given for three of four
+models, and strongly for the large ones: Llama-70B $20.9\!\rightarrow\!59.6$ and Qwen-72B
+$25.3\!\rightarrow\!64.9$. Using paired McNemar tests on the large models, every pairwise regime
+difference is significant, and raw~vs.~CoNLL-U-given is overwhelming ($p<10^{-45}$). The value lies
+almost entirely in \emph{being handed} the parse, not in generating it (self-CoNLL-U helps only
+modestly, $p\approx10^{-8}$ to $0.009$).
+
+\paragraph{H2: larger is better.} Within both families and every regime, the larger model wins by a
+wide margin (e.g.\ CoNLL-U-given: 59.6 vs.\ 4.2 for Llama; 64.9 vs.\ 23.9 for Qwen).
+
+\paragraph{H3: does structure \emph{compensate} for size?} No---if anything it \emph{widens} the
+gap. The raw-text size gap is $\approx$13--18 points; with CoNLL-U given it is $\approx$41--55
+points. Structure lets large models convert the parse into a correct count; the small models cannot.
+
+\paragraph{H4: degradation with distance.} Exact-match falls monotonically with the gold distance.
+Pooled over models, the CoNLL-U-given rate across distance buckets $\{0\text{-}1,2\text{-}4,5\text{-}9,10{+}\}$
+is $48\!\rightarrow\!51\!\rightarrow\!39\!\rightarrow\!15$; raw text is $26\!\rightarrow\!22\!\rightarrow\!11\!\rightarrow\!3$.
+The long tail---exactly the adversarial case for legal Czech---collapses in every regime.
+
+\subsection{Finding the words vs.\ counting the span}
+\label{sec:decomp}
+
+The best condition---Qwen-72B handed the gold parse---is still only 64.9\% exact. It is tempting to
+read this as the model failing to \emph{read} the supplied structure, but the residual failure is
+mostly \emph{counting}. We separate two abilities: \emph{naming} the correct subject and predicate
+words, and \emph{counting} the distance between them (Table~\ref{tab:pure}).
+
+\begin{table}[t]
+\centering\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Model} & \textbf{Names} & \textbf{Dist.} & \textbf{Exact $\mid$} \\
+\textbf{(CoNLL-U given)} & \textbf{both} & \textbf{exact} & \textbf{both named} \\
+\midrule
+Qwen-72B  & 82.7 & 64.7 & 72.3 \\
+Llama-70B & 86.7 & 59.6 & 63.8 \\
+Qwen-7B   & 41.0 & 23.5 & 38.4 \\
+Llama-8B  & 45.5 &  4.2 &  0.1 \\
+\bottomrule
+\end{tabular}
+\caption{With the parse supplied: how often the model \emph{names} both the correct subject and
+predicate words, its overall distance exact-match, and the exact-match \emph{restricted to} the
+cases where it named both words correctly (all \%). Even given the parse \emph{and} the right two
+words, the large models still miscount $\approx$28--36\% of the time; Llama-8B essentially never
+counts correctly.}
+\label{tab:pure}
+\end{table}
+
+Given the parse, the large models \emph{name} the right subject and predicate most of the time (both
+correct 83--87\%), yet their distance is exact only 60--65\%. Even restricting to generations where
+they named \emph{both} words correctly, the distance is exact only 63.8\% (Llama-70B) and 72.3\%
+(Qwen-72B): handed the parse \emph{and} the right two words, the large models still miscount the span
+$\approx$28--36\% of the time. Llama-8B essentially never produces the correct distance even when it
+named both words (0.1\%).
+
+The error is specifically in \emph{counting word positions}. The large models report the correct
+predicate word 93--97\% of the time but its correct linear position only ${\approx}55\%$ of the time
+(subject: named 87--88\%, positioned 73--75\%); the endpoint deeper in the sentence---usually the
+predicate---is mis-positioned far more often, the signature of a count that drifts with length. In a
+typical failure the model names the right words (e.g.\ \emph{provozovatel}, \emph{hrad\'{i}}) but
+places them at positions 30 and 17 instead of 25 and 14, giving distance 12 instead of 10. In short,
+with the structure supplied, identifying \emph{which} words are subject and predicate is largely
+solved; what remains unreliable---even for the 72B model---is the counting itself.
+
+\subsection{Instability}
+\label{sec:instab}
+
+Even at temperature~0 with a pinned provider and quantization, the three runs disagree on
+\textbf{36\%} (raw text) and \textbf{56\%} (self-CoNLL-U) of sentence$\times$model triplets;
+CoNLL-U-given is far more stable (11\%). Two points matter for deployment. First, the instability
+\emph{tracks difficulty}: for raw text the fraction of varying triplets grows with distance
+($29\%\!\rightarrow\!41\%$). Second, and decisively, \textbf{majority-vote-of-three does not improve
+accuracy}---it equals the single-run rate in every cell (e.g.\ Qwen-72B raw $25.3\!\rightarrow\!24.8$;
+Llama-70B CoNLL-U-given $59.6\!\rightarrow\!60.0$). When the model varies, it flip-flops between
+\emph{wrong} answers, so self-consistency or resampling will not deliver repeatable rule outcomes.
+A \emph{consistent} answer can also be consistently \emph{wrong}: Llama-8B given CoNLL-U is 80\%
+consistent but 4\% correct---reproducibility is not correctness.
+
+\subsection{Is the silver oracle trustworthy?}
+\label{sec:noisefloor}
+
+Because we score against UDPipe, we re-parse 740 human-gold sentences from the Czech Legal Text
+Treebank \citep{kriz2018cltt} with the \emph{same} UDPipe model and compare. Where UDPipe commits to
+a comparable single-clause parse (295/740), it agrees with the human gold on subject (100\%),
+predicate (99.3\%), and \emph{distance-exact} (99.3\%), MAE~0.14. The silver \emph{labels} are thus
+highly reliable on legal Czech, and the model failures above are real, not oracle noise. The silver
+noise that does exist is in \emph{sentence segmentation}: for the remaining 445 sentences UDPipe
+split the gold sentence into two or more, disagreeing about where a sentence ends rather than about
+its subject and predicate.
+
+\section{Discussion: implications for drafting tools}
+
+Two results together are decisive for how structural rules should be built. First, the LLM's weak
+link is the counting itself: even handed the gold parse \emph{and} having named the correct subject
+and predicate, the best model still miscounts the distance $\approx$28\% of the time
+(\S\ref{sec:decomp})---whereas computing the distance from two identified endpoints is deterministic
+arithmetic, exact in code. Second, our noise-floor shows a dependency parser identifies those
+endpoints $\approx$99\% correctly on legal Czech (\S\ref{sec:noisefloor}). Hence a \textbf{deterministic
+extractor over the UD parse would be $\approx$99\% accurate and zero-variance}, against $\leq$65\%
+and highly unstable for the best LLM prompt. Standard LLM mitigations---temperature~0, provider
+pinning, majority voting---demonstrably do \emph{not} yield repeatable counts (\S\ref{sec:instab}).
+
+We therefore recommend that legislative-drafting tools \textbf{triage each rule}: structural /
+countable rules (paragraph counts, reference nesting, dependency-distance-style complexity) should be
+implemented as deterministic functions of a parse, \emph{not} as LLM prompts; ``LLM~+~structured
+context'' is warranted only for rules requiring semantic judgment a parser cannot express. The one
+caveat that carries over to any method is sentence segmentation, which on legal Czech is
+parser-dependent and must be treated as a fallible, first-class step upstream of any counting rule.
+
+\section{Conclusion}
+
+On a narrow, objectively scoreable proxy---subject--predicate word-distance in Czech legal text---no
+LLM configuration we tested is reliable, the best (a 72B model handed the gold parse) reaching only
+65\% exact. Larger models read the structure reasonably well but still miscount the span
+$\approx$30\% of the time even when handed the parse and having named the correct endpoints; smaller
+models cannot count at all; and the run-to-run instability cannot be tuned away. Because a
+dependency parser identifies the endpoints $\approx$99\% correctly and the count is then
+deterministic, structural drafting rules are best served by deterministic extraction over a parse
+rather than by prompting an LLM.
+
+\section*{Limitations}
+
+The evaluation is silver-standard: we measure agreement with UDPipe, not linguistic truth. We
+mitigate this with a human-gold parser-quality control (\S\ref{sec:noisefloor}) showing 99.3\%
+label agreement, but the segmentation disagreement it surfaces is a genuine limitation for
+end-to-end deployment. The operationalization of ``predicate'' as head-of-subject is a defensible
+but provisional choice awaiting linguist confirmation. We test one prompt formulation per regime
+and do not perform prompt-engineering sweeps; results may shift with different phrasings. The four
+models are all open-weight and $\leq$72B; whether the counting bottleneck shrinks at frontier
+scale is an open question we did not test. Finally, success or failure on
+this proxy predicts, but does not prove, (un)reliability on other counting-type rules (paragraph
+counts, reference depth); we frame it as a probe, not a general claim about ``LLMs and counting.''
+
+\bibliography{custom}
+
+\end{document}

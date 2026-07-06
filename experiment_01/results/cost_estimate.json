@@ -1,0 +1,71 @@
+{
+  "n_sentences": 640,
+  "n_runs": 3,
+  "n_models": 4,
+  "generations": 23040,
+  "cpt_central": 3.5,
+  "prompt_overhead_chars": {
+    "raw_text": 1340,
+    "raw_to_conllu": 1817,
+    "conllu_input": 2182
+  },
+  "per_regime_input_chars": {
+    "raw_text": 978681,
+    "raw_to_conllu": 1283961,
+    "conllu_input": 3785110
+  },
+  "per_regime_output_chars": {
+    "raw_text": 64808,
+    "raw_to_conllu": 543060,
+    "conllu_input": 64808
+  },
+  "per_model_token_load_central": {
+    "in": 5183790,
+    "out": 576582
+  },
+  "token_band_over_all_models": {
+    "cpt_3.0": {
+      "in": 24191016,
+      "out": 2690712
+    },
+    "cpt_3.5": {
+      "in": 20735160,
+      "out": 2306328
+    },
+    "cpt_4.0": {
+      "in": 18143280,
+      "out": 2018028
+    }
+  },
+  "per_model_cost_usd": [
+    {
+      "id": "small-1 (~8B open)",
+      "size": "small",
+      "in": 0.02,
+      "out": 0.03,
+      "cost_usd": 0.12
+    },
+    {
+      "id": "small-2 (~7-12B open)",
+      "size": "small",
+      "in": 0.05,
+      "out": 0.1,
+      "cost_usd": 0.32
+    },
+    {
+      "id": "large-1 (~70B open)",
+      "size": "large",
+      "in": 0.12,
+      "out": 0.3,
+      "cost_usd": 0.8
+    },
+    {
+      "id": "large-2 (frontier)",
+      "size": "large",
+      "in": 2.5,
+      "out": 10.0,
+      "cost_usd": 18.73
+    }
+  ],
+  "total_cost_usd_central": 19.96
+}

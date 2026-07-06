@@ -1,7 +1,20 @@
 .env
 *.zip
+# Overleaf project clone (separate git repo, synced via git.overleaf.com)
+/paper/
 experiment_01/data/raw/
+# large regenerable intermediate (415k gold pairs, ~250MB); rebuild via src/extract_pairs.py
+experiment_01/data/processed/kuk_pairs.jsonl
 __pycache__/
 *.pyc
 .venv/
 venv/
+# LaTeX build artifacts (keep .tex/.bib/.pdf, drop the rest)
+*.aux
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.out
+*.log
+experiment_01/paper/build.log
