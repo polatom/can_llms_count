@@ -20,20 +20,8 @@ paper/                  Overleaf project clone — NOT part of this repo (gitign
 
 ## Git conventions
 
-- Canonical repository: **`github.com/ufal/can_llms_count`** (private). A personal
-  mirror may exist at `polatom/can_llms_count`; the ufal repo is the source of truth.
-- All commits to this project use the **`polatom`** GitHub identity
-  (`Tomas Polak <polak.t@gmail.com>`), not any work account. This is enforced with
-  repo-local config on a fresh clone:
-
-  ```bash
-  git clone git@github.com:ufal/can_llms_count.git
-  cd can_llms_count
-  git config user.name "Tomas Polak"
-  git config user.email "polak.t@gmail.com"
-  # pin the ssh key that maps to the polatom account:
-  git config core.sshCommand "ssh -i ~/.ssh/id_rsa_polatom -o IdentitiesOnly=yes"
-  ```
+Canonical repository: **`github.com/ufal/can_llms_count`** (private). Mirrors may
+exist; the ufal repo is the source of truth.
 
 ## Paper workflow (Overleaf ↔ git)
 
@@ -68,6 +56,14 @@ colleague becomes a commit — **always pull before pushing**.
    git clone https://git.overleaf.com/<OVERLEAF_PROJECT_ID> paper
    # username: git, password: the token — or store it in a credential helper,
    # e.g. ~/.overleaf-git-credentials with `store --file=...` (chmod 600)
+   ```
+3. Install the freshness hook, which makes any commit in `paper/` first fetch
+   from Overleaf and refuse to proceed if colleagues' edits haven't been
+   incorporated yet (hooks live in `.git/` and are never cloned, so this step
+   is per-machine):
+   ```bash
+   cp scripts/overleaf-pre-commit-hook.sh paper/.git/hooks/pre-commit
+   chmod +x paper/.git/hooks/pre-commit
    ```
 
 ## Environment (`.env`, gitignored — never commit)
