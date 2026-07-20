@@ -45,10 +45,13 @@ DEFAULT_CLTT = os.path.normpath(os.path.join(
 BASE = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 
-def udpipe(text: str) -> str:
+def udpipe(text: str, presegmented: bool = False) -> str:
     data = urllib.parse.urlencode({
-        "tokenizer": "", "tagger": "", "parser": "", "model": UDPIPE_MODEL,
-        "output": "conllu", "data": text,
+        "tokenizer": "presegmented" if presegmented else "",
+        "tagger": "", "parser": "", "model": UDPIPE_MODEL,
+        "output": "conllu",
+        # presegmented = newline-delimited sentences; a unit must be one line
+        "data": text.replace("\n", " ") if presegmented else text,
     }).encode()
     for attempt in range(5):
         try:
@@ -143,11 +146,14 @@ def main() -> None:
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--offline", action="store_true",
                     help="use the cache only; fail on cache misses")
+    ap.add_argument("--presegmented", action="store_true",
+                    help="tell UDPipe the unit IS one sentence (no re-segmentation)")
     args = ap.parse_args()
 
+    suffix = "_presegmented" if args.presegmented else ""
     out_dir = os.path.join(BASE, "data", "parser_arm")
     os.makedirs(out_dir, exist_ok=True)
-    cache_path = os.path.join(out_dir, "udpipe_cache.jsonl")
+    cache_path = os.path.join(out_dir, f"udpipe_cache{suffix}.jsonl")
 
     # units from the treebank (uid -> raw text)
     units = []
@@ -172,7 +178,7 @@ def main() -> None:
              ThreadPoolExecutor(max_workers=args.workers) as ex:
             for uid, conllu in zip(
                 [u["uid"] for u in todo],
-                ex.map(lambda u: udpipe(u["text"]), todo),
+                ex.map(lambda u: udpipe(u["text"], args.presegmented), todo),
             ):
                 cf.write(json.dumps({"uid": uid, "conllu": conllu},
                                     ensure_ascii=False) + "\n")
@@ -218,7 +224,8 @@ def main() -> None:
                             "anomalies": anomalies, "verdict": verdict,
                             "pairs": pairs})
 
-    with open(os.path.join(out_dir, "parser_pairs.jsonl"), "w", encoding="utf-8") as fh:
+    with open(os.path.join(out_dir, f"parser_pairs{suffix}.jsonl"), "w",
+              encoding="utf-8") as fh:
         for r in out_records:
             fh.write(json.dumps(r, ensure_ascii=False) + "\n")
 
@@ -235,9 +242,12 @@ def main() -> None:
 
     L = []
     w = L.append
-    w("# Parser arm — results vs. CLTT gold (PRELIMINARY: pending K6–K9 sign-off)")
+    w(f"# Parser arm{' (PRESEGMENTED)' if args.presegmented else ''} — results vs. CLTT gold "
+      "(PRELIMINARY: pending K6–K9 sign-off)")
     w("")
-    w(f"UDPipe 2 `{UDPIPE_MODEL}` (LINDAT API) on the raw text of all {n} gold sentence")
+    w(f"UDPipe 2 `{UDPIPE_MODEL}` (LINDAT API"
+      f"{', tokenizer=presegmented — unit forced to one sentence' if args.presegmented else ''}) "
+      f"on the raw text of all {n} gold sentence")
     w("units; §3 extraction with sub-sentence union and word-offset mapping (§5.1).")
     w("Gold may shift when Katka's K6–K9 answers land; rescoring is deterministic and cheap.")
     w("")
@@ -268,7 +278,7 @@ def main() -> None:
       f"({100*seg_dist[3]/n:.1f}%)")
     w(f"- word-count mismatches after union mapping: {mism}")
     w("")
-    with open(os.path.join(BASE, "docs", "PARSER_ARM_RESULTS.md"), "w",
+    with open(os.path.join(BASE, "docs", f"PARSER_ARM_RESULTS{suffix}.md"), "w",
               encoding="utf-8") as fh:
         fh.write("\n".join(L))
 

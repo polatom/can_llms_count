@@ -2,7 +2,24 @@
 
 Status: **sketch — not scheduled.** Captures the "scenario 2" design converged on 2026-07-17 so
 it survives until exp_02 delivers its prerequisites (§6). Numbers marked ~ are placeholders to be
-fixed from exp_02 outputs.
+fixed from exp_02 outputs. (Prerequisites now come from **experiment_04**, the CLTT-primary
+successor of exp_02.)
+
+> **Update 2026-07-20 (from exp_04's parser-arm measurements) — the headroom moved:**
+> 1. **Segmentation was the dominant parser failure and is largely FIXABLE without an LLM:**
+>    with UDPipe's default tokenizer the parser missed 7.8% of gold pairs, ~90% of verdict
+>    false negatives being a violating pair split across re-segmented fragments. Running UDPipe
+>    with `tokenizer=presegmented` (units defined upstream, as in deployment) removes this
+>    class entirely: verdict F1 91.3 → **97.1**, pair form-F1 91.8 → **95.6**.
+> 2. **Consequently the §6 kill-switch is near-triggered at the verdict level:** on random
+>    statute text the presegmented baseline leaves only 7 FN + 4 FP sentences of 1,121 — too
+>    few to power an LLM-correction study on a random sample (as §2 predicted). The surviving
+>    target is **pair-level parse error (~4.7% of pairs, attachment/labeling)** — enrichment
+>    sampling (§3) must select for *parse* hardness (parser disagreement, deep embedding), not
+>    segmentation hardness.
+> 3. If exp_03 proceeds, "LLM-assisted segmentation" is **out** as a condition (solved more
+>    cheaply upstream); the parser-ensemble control (§4.2) and the gated corrector on
+>    parse-hard cases remain the live design. The semantic-triage module (§7) is unaffected.
 
 ---
 

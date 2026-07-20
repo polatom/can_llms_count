@@ -168,15 +168,22 @@ Two arms, identical to experiment_02 v3.1 §5 except for the parser arm's segmen
 
 UDPipe 2 (`czech-pdt-ud-2.15`, the same model used for KUK silver; via the LINDAT API, responses
 cached) parses the **raw text of each gold sentence unit**; the §3 extraction code runs over the
-result and the verdict is computed. **Segmentation handling:** UDPipe re-segments ~60% of CLTT
-gold sentences into multiple sentences; the parser arm therefore unions pairs across UDPipe's
-internal sub-sentences, with word indices mapped over the whole unit (offset by preceding
-sub-sentence lengths). This is real deployment error and is *included* in the parser arm's
-measured accuracy — which is an unknown this experiment measures (exp_01's 99.3% noise floor
-covered only single-clause commits). The gold-tree side of the same extraction is by definition
-the gold (§4.1), so the parser arm's error against gold = parse errors + segmentation errors
-(+ nothing else: the interpretation layer is shared and separately validated).
-Implementation complexity (LOC, rules, edge cases) recorded as the maintainability datum.
+result and the verdict is computed.
+
+**Two configurations, both run (2026-07-20); the baseline is the presegmented one:**
+- **default tokenizer:** UDPipe re-segments 46% of units; pairs are unioned across sub-sentences
+  with word-offset mapping. Measured: verdict F1 91.3 (recall 86.6) — the misses are almost
+  entirely segmentation-driven (violating pair split across fragments; see
+  `docs/PARSER_ARM_ERROR_ANALYSIS.md`).
+- **`tokenizer=presegmented`** (unit declared to be one sentence — the honest deployment
+  configuration, since units are defined upstream): verdict **F1 97.1** (acc 99.0, P 97.9,
+  R 96.4; TP 187 · FP 4 · FN 7), pair form-F1 **95.6**, distance-given-match 99.8%.
+The presegmented config is the baseline the LLM arm must be compared against (anything else
+would strawman the parser); the default config is reported as the measured **cost of naive
+segmentation** (~6 pts verdict F1). The parser arm's residual error vs. gold = parse errors
+only (attachment/labeling), the interpretation layer being shared and separately validated
+(§4.1). Implementation complexity (LOC, rules, edge cases) recorded as the maintainability
+datum — the presegmented flag is part of it.
 
 ### 5.2 LLM arm — pure-LLM rule (prompt-only, SPRINT-compatible)
 
@@ -290,7 +297,10 @@ parser arm, hand-categorized (feeds the paper's error analysis and exp_03's inve
 ## 11. Open items and decision record
 
 **Open:**
-- **O2:** frontier model pick + API knobs — verify at run time.
+- **O2 (narrowed 2026-07-20):** OpenRouter availability/pricing verified. Frontier candidates
+  with a reasoning toggle: `openai/gpt-5.1` ($1.25/$10 per M — cost-optimal primary candidate)
+  or `anthropic/claude-sonnet-5` ($2/$10, alternate). Final pick + provider pinning at prompt
+  freeze; open ~30B/70B slots re-verified then.
 - **O5:** garbled `teaching_examples` + English-testset question → KMH.
 - **K6/K7/K8 (Katka):** coordination convention / verbless clauses / relative-pronoun subjects.
 - **K9 (Katka):** worked-examples sign-off, then the ~100-pair verification pass (§4.1).
@@ -300,11 +310,14 @@ parser arm, hand-categorized (feeds the paper's error analysis and exp_03's inve
   new annotation; gold-260 cancelled; KUK-640 demoted to secondary. Exp_02 frozen, not rewritten.
 - **O10** (2026-07-20): formulation axis redefined (Tomáš) — R1 = best naive, R2 = best
   procedural (same definitions → scaffold isolated); production-verbatim kept as optional R0.
-- **Parser-arm preliminary result** (2026-07-20, `docs/PARSER_ARM_RESULTS.md` +
-  `docs/PARSER_ARM_ERROR_ANALYSIS.md`): verdict acc 97.1 / P 96.6 / R 86.6 / F1 91.3; per gold
-  pair 92.1% found-exact, 0.2% found-wrong-distance, 7.8% missed. The misses are
-  **segmentation-driven** (split units miss 10.7% vs. 1.7% on whole units; 24/26 verdict FNs in
-  split units, all by losing the violating pair). K7/K8 sensitivity: negligible (F1 91.3→91.0).
+- **Parser-arm preliminary results** (2026-07-20, `docs/PARSER_ARM_RESULTS*.md` +
+  `docs/PARSER_ARM_ERROR_ANALYSIS.md`): default tokenizer — verdict F1 91.3 (R 86.6), per gold
+  pair 92.1% found-exact / 0.2% found-wrong-distance / 7.8% missed; misses **segmentation-driven**
+  (split units miss 10.7% vs. 1.7%; 24/26 verdict FNs = violating pair lost in a split unit).
+  **`tokenizer=presegmented` fixes most of it:** verdict F1 **97.1** (R 96.4), pair form-F1 95.6
+  — adopted as the baseline configuration (§5.1). K7/K8 sensitivity: negligible.
+  Consequence for exp_03: verdict-level headroom shrank to 7 FN + 4 FP sentences; remaining
+  parser error is genuine parse error (~4.7% of pairs), not segmentation.
 - Inherited from experiment_02 v3.1: K1–K5 (Katka 2026-07-16), O1 (production rule obtained),
   O3 (obsolete — no IAA needed under verification design), O6–O8 (ESO population / gold slice /
   data-root move), participial-aux rule fix, T = 6 as *maximum allowed* (violation ⇔ d > 6).
