@@ -1,8 +1,8 @@
 # Experiment 02 — Methodology (draft v1, for review)
 
-Status: **draft — pending review by Katka (linguistic operationalization, §3) and Tomáš (roster,
-budget, open questions §12).** Self-contained: everything needed to run experiment_02 is defined
-here; experiment_01 is cited for motivation only, no artifacts are reused.
+Status: **draft v2 — §3 reviewed by Katka (2026-07-16); decisions K1–K5 and the aby/kdyby rule
+incorporated. Remaining open: T1–T4 (Tomáš, §12).** Self-contained: everything needed to run
+experiment_02 is defined here; experiment_01 is cited for motivation only, no artifacts are reused.
 
 ---
 
@@ -54,42 +54,65 @@ nominal subject — possibly empty (fragments, headings, verbless enumeration it
 plural (multi-clause sentences, coordination of clauses). For each pair: subject word, predicate
 word, their 1-based word positions, and the distance.
 
-### 3.1 Predicate (Katka's definition — operationalized in UD, needs her sign-off)
+### 3.1 Predicate (Katka's definition — operationalized in UD; reviewed by Katka 2026-07-16)
 
 Per the paper draft (§ *Subject and predicate in free word order languages*): the predicate for
-measurement purposes is **the verb in finite form, or the auxiliary verb in analytic verb forms
-and modal constructions — i.e. the element that carries grammatical agreement with the subject.**
-For verbo-nominal (copular) predicates: **the copula**, not the nominal part.
-(Note: this *reverses* exp_01's provisional rule, which measured to the nominal part.)
+measurement purposes is **the element that carries grammatical agreement with the subject** — the
+verb in finite form, or the auxiliary verb in analytic verb forms and modal constructions.
+Terminology (corrected per Katka's review): **copular predicates** (přísudek jmenný se sponou,
+*Petr je prezident*) and **verbo-nominal predicates** (light-verb constructions per Radimský,
+*Petr vystavil fakturu*) are two distinct types. For copular predicates we measure to **the
+copula**, not the nominal part (note: this *reverses* exp_01's provisional rule); for
+verbo-nominal predicates, to the finite (light) verb.
 
-UD operationalization — for each clause whose predicate head is a verb or a copular nominal:
+UD operationalization — for each clause:
 
 | clause type | example | measured predicate token |
 |---|---|---|
 | simple finite verb | *Soud **rozhodl** …* | the verb itself |
-| analytic past (aux present) | *… **jsem** rozhodl* | the finite AUX (*jsem*) |
-| analytic past 3rd person (no aux) | *Soud **rozhodl** o …* | the l-participle itself |
+| verbo-nominal (light verb, Radimský) | *Petr **vystavil** fakturu* | the finite verb (*vystavil*) |
+| analytic past, 1st/2nd person | *… rozhodl **jsem*** | the finite AUX (*jsem*) |
+| analytic past, 3rd person (no aux) | *Soud **rozhodl** o …* | the l-participle itself |
 | analytic future | *Soud **bude** rozhodovat* | the finite AUX (*bude*) |
-| conditional | *Soud **by** rozhodl* | the conditional AUX (*by/bych/bys*) — **K2** |
+| conditional | *Soud **by** rozhodl* | the conditional AUX (*by*) |
+| past conditional (two aux) | *Byl **bys** šel do kina?* | the conditional AUX (*bys*) — **not** necessarily leftmost (K1) |
 | passive | *Rozhodnutí **bylo** vydáno* | the finite AUX (*bylo*) |
-| copular (verbo-nominal) | *Zákon **je** účinný* | the copula (*je*) |
-| multiple auxiliaries | *Soud **by** byl rozhodl* | the **leftmost** finite AUX — proposal, **K1** |
+| copular | *Petr **je** prezident* | the copula (*je*) |
+| aby/kdyby clause (absorbed *by*) | *…, **aby** se Petr nemusel zouvat* | the conjunction word (*aby*) — it absorbs the conditional AUX and carries person agreement (*abych/abys/…*) |
 
-Mechanically: take the clause head; if it has finite `aux`/`aux:pass`/`cop` children, the measured
-predicate is the *leftmost* finite one; otherwise the clause head itself (which is then a finite
-verb or l-participle).
+**Mechanical rule: the measured predicate is the finite element of the predicate complex** — the
+`aux`/`aux:pass`/`cop` child with `VerbForm=Fin` if the clause head has one, otherwise the clause
+head itself (then a finite verb or bare l-participle). No positional (leftmost) heuristic: in
+past-conditional forms the participial aux (*byl*) is `VerbForm=Part` and only the conditional
+*by/bys* is finite, so the rule selects it wherever it stands — including in questions (K1). Rare
+double-aux forms without a conditional (pluperfect *byl jsem přišel*, passive conditional *byl by
+vydán*) still contain exactly one finite AUX; the extraction code asserts uniqueness and logs any
+violation.
+
+**aby/kdyby falls out for free:** in UD these conjunctions are multiword tokens — surface *aby* =
+`aby` (SCONJ, `mark`) + `by` (AUX, `Mood=Cnd|VerbForm=Fin`, `aux` of the clause head); verified in
+`cs_cltt` gold. The finite-element rule selects the `by` token, and the §3.4 token→word mapping
+assigns it the surface word *aby*/*kdyby* — implementing Katka's decision ("count the conjunction
+as the predicate; the *by* is inside it") with no special case.
+
+**Consequence note (metric semantics):** measuring to the agreement-bearing element means that for
+conditionals and 1st/2nd-person past forms the target is a second-position clitic (*by, jsem*),
+which sits early in the clause regardless of where the lexical verb is — distances there will be
+systematically shorter than under a measure-to-the-content-verb rule. In legislative text this
+bites rarely (legal Czech is overwhelmingly 3rd person, where the past tense has no auxiliary),
+but the annotation guidelines and the paper should state it.
 
 ### 3.2 Subject
 
 The word bearing the `nsubj`/`nsubj:pass` relation to the clause head (the head word of the
-subject phrase; for coordinated subjects, the first conjunct — the UD head — **K3**).
+subject phrase; for coordinated subjects, the first conjunct — the UD head — confirmed, K3).
 
 ### 3.3 Exclusions and null cases (inside sentences that are all kept)
 
 - **Pro-drop clauses** (finite predicate, no overt subject): no pair is produced for that clause.
   Systems must *not* hallucinate a subject — false positives are penalized via precision (§8).
-- **Clausal subjects** (`csubj`): excluded from pairs (no single word position); counted and
-  reported. **K4**
+- **Clausal subjects** (`csubj`): excluded from pairs (no single word position to measure from —
+  confirmed, K4); counted and reported.
 - **Fragments / verbless headings:** gold = empty set. Correctly returning "no pairs" is scored.
 
 ### 3.4 Distance
@@ -157,8 +180,9 @@ structured as an explicit step sequence rather than a single instruction:
 3. branch on what was found — no pair (pro-drop, fragment) → empty list; one pair; multiple
    pairs (multi-clause, coordination) → list all.
 The branching is not prompt sophistication for its own sake — it mirrors the §3.3 task definition
-that unfiltered text forces. Few-shot examples cover each branch: simple SVO, copular, analytic
-form, pro-drop (no pair), multi-clause (two pairs), fragment (empty).
+that unfiltered text forces. Few-shot examples cover each branch and each tricky predicate type:
+simple SVO, copular, analytic form, conditional, aby/kdyby clause (predicate = the conjunction
+word), pro-drop (no pair), multi-clause (two pairs), fragment (empty).
 
 **Design principle (from exp_01): the model never produces a number it had to count for.** Every
 count is either precomputed into the input (word numbering, C) or derived from the model's output
@@ -233,9 +257,9 @@ metric form.
 
 **Distance (RQ2) — on form-matched pairs:** exact / ±1 / MAE. Plus the probe accuracies (§6).
 
-**Practical rule verdict (RQ3, secondary):** per sentence, "flag if any pair has d ≥ T" (T from
-PONK / Katka — **K5**); report flag agreement with gold. This is the metric closest to what a
-deployed linter does.
+**Practical rule verdict (RQ3, secondary):** per sentence, "flag if any pair has d ≥ T" with
+**T = 6** — PONK's current limit distance (Katka, K5); report flag agreement with gold. This is
+the metric closest to what a deployed linter does.
 
 **Stability:** across the 3 runs — exact-set match of the full pair list; per-pair distance spread.
 
@@ -280,19 +304,28 @@ frontier + reasoning tokens: estimate **$150–500** (exp_01 open-model baseline
 per-token prices are 20–100×, reasoning inflates output tokens further). Real cost captured from
 `usage`; not a hard constraint per Tomáš.
 
-## 12. Open questions
+## 12. Open questions and decision record
 
-For **Katka** (blocking §3 sign-off; worked examples will be prepared for each):
-- **K1:** multiple auxiliaries (*by byl rozhodl*) — leftmost finite AUX as the measured predicate?
-- **K2:** conditional — is *by* (3rd person, no person agreement) the right target, or the
-  l-participle?
-- **K3:** coordinated subjects (*ministr a náměstek*) — first conjunct (UD head) as the subject
-  word?
-- **K4:** clausal subjects (`csubj`) — exclude from pairs (report counts only)?
-- **K5:** what distance threshold T does PONK / the comprehensibility literature suggest for the
-  rule-verdict metric (§8)?
+**Resolved — Katka's review, 2026-07-16** (decisions incorporated in §3.1/§3.2/§3.3/§8):
+- **K1 (multiple auxiliaries):** measure to the conditional AUX *by/bych/bys/…*, which is **not**
+  necessarily leftmost (questions: *Byl bys šel …?*). It carries person agreement with the subject
+  (*byl* agrees only in number/gender). Implemented positionally-agnostic via the finite-element
+  rule. Her side-question — are there multi-aux constructions without conditional *by*? — is
+  handled by the same rule: rare double-aux forms (pluperfect *byl jsem přišel*, passive
+  conditional *byl by vydán*) still contain exactly one finite AUX.
+- **K2 (conditional *by* as target):** confirmed. Caveat recorded: 3rd-person *by* is
+  form-ambiguous between sg/pl; other persons have unique forms (*bych, bys, bychom, byste*).
+- **K3 (coordinated subjects):** confirmed — first conjunct (UD head).
+- **K4 (csubj):** confirmed — exclude from pairs, report counts (no principled measuring point).
+- **K5 (threshold):** **T = 6**, PONK's current subject–predicate limit distance.
+- **New from review — aby/kdyby clauses:** conjunctions of the *aby/kdyby* type absorb the
+  conditional AUX and agree with the subject (*abych/abys/…*); subject may or may not be overt.
+  Decision: the measured predicate is the conjunction word (§3.1 — falls out of the MWT
+  token→word mapping automatically).
+- **Terminology fix (§3.1):** verbo-nominal (light-verb, *vystavil fakturu*) ≠ copular
+  (*je prezident*) — two distinct predicate types; both now correctly named in the table.
 
-For **Tomáš**:
+For **Tomáš** (open):
 - **T1:** budget ceiling for the frontier roster (pick 2 vs. 3 frontier models)?
 - **T2:** which frontier models exactly (availability + API knobs to be verified at run time)?
 - **T3:** sub-corpora balanced 160×4 (continuity) vs. population-proportional — keep balanced?
