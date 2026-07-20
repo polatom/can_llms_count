@@ -302,14 +302,27 @@ parser arm, hand-categorized (feeds the paper's error analysis and exp_03's inve
   or `anthropic/claude-sonnet-5` ($2/$10, alternate). Final pick + provider pinning at prompt
   freeze; open ~30B/70B slots re-verified then.
 - **O5:** garbled `teaching_examples` + English-testset question → KMH.
-- **K6/K7/K8 (Katka):** coordination convention / verbless clauses / relative-pronoun subjects.
-- **K9 (Katka):** worked-examples sign-off, then the ~100-pair verification pass (§4.1).
+- **K6–K9: provisionally CLOSED by self-adjudication (2026-07-20,
+  `docs/PROVISIONAL_ANSWERS_K6-K9.md`)** — K6 one pair (first verb); K7 exclude verbless; K8
+  include rel-pron subjects in headline + separate breakdown; K9 worked examples self-reviewed.
+  The design proceeds; **Katka verifies asynchronously** — impactful reversals (only K6 touches
+  prompts) trigger a follow-up re-run, K7/K8 reversals are rescoring-only.
 
 **Resolved (this experiment):**
 - **O9** (2026-07-20): CLTT-primary redesign adopted (Tomáš) — power 194 vs. ~20 positives, no
   new annotation; gold-260 cancelled; KUK-640 demoted to secondary. Exp_02 frozen, not rewritten.
 - **O10** (2026-07-20): formulation axis redefined (Tomáš) — R1 = best naive, R2 = best
   procedural (same definitions → scaffold isolated); production-verbatim kept as optional R0.
+- **O11** (2026-07-20): open ~30B slot = **gemma-3-27b-it** (DeepInfra fp8, pinned) — qwen3-32b
+  rejected in the smoke test: the endpoint ignored `reasoning.enabled=false` and hidden thinking
+  consumed the whole 6k-token budget (3/40 calls empty). Gemma is natively non-thinking; both
+  were named §6 candidates.
+- **Prompts frozen v1** (2026-07-20): smoke test passed (gemma-27b 40/40 parse-ok, qwen-72b
+  40/40; format compliance only, no metric peeking). Template SHAs recorded per trace.
+- **Execution status** (2026-07-20): K6–K9 provisionally closed; open-model grid (gemma-27b +
+  qwen-72b × R1/R2 × 3 passes × 1,121 = 13,452 calls) launched; **frontier deferred** until
+  open-model results are in — then full grid, a sample, or hard-cases-only (Tomáš's call,
+  assuming frontier handles the easy mass well).
 - **Parser-arm preliminary results** (2026-07-20, `docs/PARSER_ARM_RESULTS*.md` +
   `docs/PARSER_ARM_ERROR_ANALYSIS.md`): default tokenizer — verdict F1 91.3 (R 86.6), per gold
   pair 92.1% found-exact / 0.2% found-wrong-distance / 7.8% missed; misses **segmentation-driven**

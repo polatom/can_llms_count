@@ -1,0 +1,49 @@
+{
+  "_comment": "Run config for run_llm.py. Open slots pinned to DeepInfra fp8 (qwen-72b = the exact exp_01 anchor endpoint; qwen3-32b same provider+quant, thinking disabled -> the 'standard ~30B' slot). Frontier slots present but DISABLED (run_frontier=false) per decision 2026-07-20: open models first; frontier later, possibly sample/hard-cases-only. Verified via /endpoints 2026-07-20; authoritative cost from usage.cost.",
+  "temperature": 0,
+  "n_runs": 3,
+  "max_tokens": 6000,
+  "workers": 8,
+  "max_retries": 5,
+  "retry_base_seconds": 2,
+  "models": [
+    {
+      "model_id": "gemma-27b",
+      "slug": "google/gemma-3-27b-it",
+      "capability": "open-30b",
+      "provider": "DeepInfra",
+      "quantization": "fp8",
+      "enabled": true,
+      "_note": "replaced qwen3-32b 2026-07-20: DeepInfra ignored reasoning.enabled=false and hidden thinking consumed the whole token budget (3/40 smoke calls empty, 5.3k reasoning tokens). Gemma is natively non-thinking = clean 'standard ~30B' slot; both were named §6 candidates."
+    },
+    {
+      "model_id": "qwen-72b",
+      "slug": "qwen/qwen-2.5-72b-instruct",
+      "capability": "open-70b",
+      "provider": "DeepInfra",
+      "quantization": "fp8",
+      "enabled": true
+    },
+    {
+      "model_id": "frontier",
+      "slug": "openai/gpt-5.1",
+      "capability": "frontier",
+      "reasoning": {"effort": "none"},
+      "enabled": false,
+      "_note": "reasoning-off mode; enable after open-model results (O2: alternate anthropic/claude-sonnet-5)"
+    },
+    {
+      "model_id": "frontier-reasoning",
+      "slug": "openai/gpt-5.1",
+      "capability": "frontier-reasoning",
+      "reasoning": {"effort": "high"},
+      "enabled": false,
+      "_note": "reasoning-on mode; possibly sample or hard-cases-only per decision 2026-07-20"
+    }
+  ],
+  "formulations": {
+    "r1": "r1_naive.txt",
+    "r2": "r2_procedural.txt"
+  },
+  "_formulations_note": "r0_production_verbatim.txt = optional reference arm, add to the map to run"
+}
