@@ -47,8 +47,28 @@ def classify_pair(p) -> str:
     return "finite verb / l-participle"
 
 
-def numbered_words(text: str) -> str:
-    return " ".join(f"{i+1}:{w}" for i, w in enumerate(text.split()))
+def numbered_words(text: str, focus: list[int] | None = None,
+                   full_limit: int = 40, radius: int = 7) -> str:
+    """Numbered word listing; long sentences windowed around focus positions.
+
+    `focus` are 1-based word indices (the featured pair). Original numbering is
+    preserved inside windows; gaps shown as (…).
+    """
+    words = text.split()
+    if len(words) <= full_limit or not focus:
+        return " ".join(f"{i+1}:{w}" for i, w in enumerate(words))
+    keep: set[int] = set()
+    for f in focus:
+        keep.update(range(max(1, f - radius), min(len(words), f + radius) + 1))
+    out, prev = [], 0
+    for i in sorted(keep):
+        if i > prev + 1:
+            out.append("(…)")
+        out.append(f"{i}:{words[i-1]}")
+        prev = i
+    if prev < len(words):
+        out.append("(…)")
+    return " ".join(out)
 
 
 def main() -> None:
@@ -90,7 +110,9 @@ def main() -> None:
                     # sentence in CLTT — a long genuine CLTT example beats an
                     # invented one, the human-tree guarantee is the point)
                     if nw >= 4 and not p.anomalies:
-                        examples.setdefault(kind, []).append((nw, text, p, uid))
+                        allp = [(q.subj_form, q.subj_word_idx, q.pred_word_form,
+                                 q.pred_word_idx, q.distance) for q in ext.pairs]
+                        examples.setdefault(kind, []).append((nw, text, p, uid, allp))
                 if ext.nonverbal_nsubj_excluded and nw <= 20 and len(verbless_examples) < 4:
                     verbless_examples.append((text, uid))
 
@@ -98,11 +120,19 @@ def main() -> None:
     w = lines.append
     w("# Worked examples for Katka — §3 extraction rule on CLTT gold trees")
     w("")
-    w("Purpose (METHODOLOGY §4.2): confirm that the mechanical rule (predicate = finite element")
-    w("of the predicate complex; subject = nsubj head word) matches your definition, per")
-    w("construction type. All examples below come from human-annotated `cs_cltt` trees, so any")
-    w("error is in OUR rule, not in a parser. For each: numbered words, the extracted pair,")
-    w("the distance (words strictly between). **Please mark each ✓ or correct it.**")
+    w("Purpose (METHODOLOGY §4.2): confirm that the mechanical rule (predicate = the")
+    w("agreement-bearing element of the predicate complex; subject = nsubj head word) matches")
+    w("your definition, per construction type. All examples below come from human-annotated")
+    w("`cs_cltt` trees, so any error is in OUR rule, not in a parser.")
+    w("")
+    w("How to read the examples:")
+    w("- A sentence may contain **several** pairs (one per finite clause with an overt subject —")
+    w("  relative clauses included). The ★ line is the pair illustrating the section's")
+    w("  construction; the following line lists the sentence's remaining pairs for context.")
+    w("- Long sentences are shown as numbered windows around the ★ pair; (…) marks omitted text.")
+    w("- Section labels come from UD relations; for participial predicates the copular/passive")
+    w("  distinction may blur — please judge the measured PAIR, the label is only a grouping.")
+    w("- **Please mark each ✓ or correct it.**")
     w("")
     w(f"Derivation over the whole treebank: {n_sent} sentences → {n_pairs} pairs. "
       f"Distribution: " + ", ".join(f"{k}: {v}" for k, v in kinds.most_common()))
@@ -119,16 +149,23 @@ def main() -> None:
         picked = sorted(examples.get(kind, []), key=lambda e: e[0])[:3]
         # avoid three near-identical sentences: drop same-text duplicates
         seen_texts: set[str] = set()
-        for _nw, text, p, uid in picked:
+        for _nw, text, p, uid, allp in picked:
             if text in seen_texts:
                 continue
             seen_texts.add(text)
             w(f"- `{uid}`")
-            w(f"  - {numbered_words(text)}")
-            w(f"  - pair: **{p.subj_form}** (word {p.subj_word_idx}) ↔ "
+            w(f"  - {numbered_words(text, focus=[p.subj_word_idx, p.pred_word_idx])}")
+            w(f"  - ★ featured pair: **{p.subj_form}** (word {p.subj_word_idx}) ↔ "
               f"**{p.pred_word_form}** (word {p.pred_word_idx}"
               f"{'' if p.pred_word_form == p.pred_form else f', measured token: {p.pred_form}'}) "
               f"→ distance **{p.distance}**")
+            if len(allp) > 1:
+                others = "; ".join(
+                    f"{sf}@{si} ↔ {pf}@{pi} (d={d})"
+                    for sf, si, pf, pi, d in allp
+                    if not (si == p.subj_word_idx and pi == p.pred_word_idx)
+                )
+                w(f"  - all other pairs in this sentence: {others}")
             w("  - [ ] ✓ / correction: ")
             w("")
         if not picked:
