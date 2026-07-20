@@ -42,6 +42,9 @@ KROK 4 — Pro každý pár odečti z očíslování pozice a spočítej
 vzdálenost = |pozice_podmětu − pozice_přísudku| − 1.
 Porušení nastává, je-li vzdálenost KTERÉHOKOLI páru větší než 6.
 
+KROK 5 — Kontrola: pro každý pár se vrať k očíslování z KROKU 3 a ověř, že na uvedených
+pozicích stojí přesně uvedená slova (podmět i přísudek). Neshodu oprav před odpovědí.
+
 Nakonec vypiš na SAMOSTATNÉM posledním řádku POUZE platný JSON:
 {"pairs": [{"podmet": "<slovo>", "podmet_index": <int>, "prisudek": "<slovo>", "prisudek_index": <int>, "vzdalenost": <int>}], "has_violation": <true|false>}
 

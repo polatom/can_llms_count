@@ -20,8 +20,12 @@ rule formulation does it take?*
 **The two experimental axes:**
 - **Model capability** (ordered axis): open ~30B → open ~70B → frontier → frontier with
   reasoning. "How low can we go?"
-- **Rule formulation** (categorical axis): the production-style prose rule (R1) vs. a procedural
-  rewrite of the same rule (R2). Two points now; further formulation exploration only if R2 wins.
+- **Rule formulation** (categorical axis, redefined 2026-07-20 — O10): **R1 = the best naive
+  rule** (full §3 definitions and examples, no counting scaffold) vs. **R2 = the best procedural
+  rule** (same definitions + self-enumeration scaffold + self-check). Task knowledge is held
+  constant, so R1-vs-R2 **isolates the counting scaffold**. The production rule verbatim is kept
+  as an **optional reference arm R0** (one model only) to preserve the deployed before/after
+  story. Further formulation exploration only if R2 wins.
 
 **Practical motivation (SPRINT).** SPRINT rules are prose prompts written by lawyers; the app
 sends each sentence plus the rule prompt to an LLM and parses `{has_violation, reason,
@@ -180,21 +184,26 @@ Raw sentence unit in the prompt; model returns JSON with the pair list **and** t
 model's own `has_violation` is the scored verdict. No pre/post-processing. Code-side validation
 (schema, index bounds, form-at-index) recorded as measurement, never corrected.
 
-Two **rule formulations** per model:
-- **R1 — production rule:** faithful Czech adaptation of the SPRINT export
-  `../experiment_02/docs/sprint-rule-C4DHI_Predicate-Subject_Distance.json`, preserving its level
-  of (under)specification; the garbled teaching example repaired (flagged to KMH, O5).
-- **R2 — procedural rule:** the same rule as an explicit procedure (SPRINT `_mod` pattern):
-  (1) list finite clauses and identify each predicate per §3 (definitions + examples per tricky
-  type); (2) identify overt subjects (pro-drop → no pair); (3) **enumerate the sentence word by
-  word with a running counter** (self-enumeration scratchpad); (4) read off positions, subtract,
-  compare with T = 6, output pairs + verdict. Few-shot examples cover: simple SVO, copular
-  (present *and* past), conditional, aby-clause, pro-drop, multi-clause, fragment, one long
-  sentence with d > 6.
-One fixed formulation each; shared output schema
+Rule formulations (drafts in `src/prompts/`, frozen after Katka + smoke test):
+- **R1 — best naive rule** (`r1_naive.txt`): full §3 definitions with examples (predicate =
+  agreement-bearing element incl. past *byla* and aby-conjunction; overt-subject requirement;
+  pro-drop/fragment/coordination conventions; word/distance definitions), few-shot examples with
+  answers — but **no procedure, no enumeration, no self-check**. "The best rule a lawyer could
+  write without prompting techniques."
+- **R2 — best procedural rule** (`r2_procedural.txt`): the **same definitions**, restructured as
+  an explicit procedure (SPRINT `_mod` pattern + the scratchpad/counting literature): (1) find
+  finite clauses and predicates; (2) find overt subjects; (3) **enumerate the sentence word by
+  word** (one `number: word` line each — the self-enumeration scaffold, atomic-alignment format);
+  (4) read off positions, subtract, compare with T = 6; (5) **self-check** endpoints against the
+  enumeration. Same few-shot sentences as R1, with the enumeration shown.
+- **R0 — production rule verbatim (optional reference arm, one model):**
+  (`r0_production_verbatim.txt`) faithful Czech adaptation of the SPRINT export, preserving its
+  underspecification (garbled example repaired — O5). Adds ~3.4k generations if run.
+Because R1 and R2 share task knowledge and few-shot sentences, **R1-vs-R2 isolates the
+scaffold**; R0-vs-R1 measures what better definitions alone buy (the Ginn & Palmer 2025
+rules-vs-examples caveat applies to R0-vs-R1 and is stated in the paper). Shared output schema
 `{"pairs": [{"podmet", "podmet_index", "prisudek", "prisudek_index", "vzdalenost"}],
-"has_violation"}`. R1-vs-R2 varies definition *and* scaffold together, deliberately ("best
-realistic lawyer rule" vs. "best procedural rule"; Ginn & Palmer 2025 caveat stated in the paper).
+"has_violation"}`; scoring strips glued punctuation from word forms before form matching.
 
 ## 6. Models and run protocol
 
@@ -289,6 +298,13 @@ parser arm, hand-categorized (feeds the paper's error analysis and exp_03's inve
 **Resolved (this experiment):**
 - **O9** (2026-07-20): CLTT-primary redesign adopted (Tomáš) — power 194 vs. ~20 positives, no
   new annotation; gold-260 cancelled; KUK-640 demoted to secondary. Exp_02 frozen, not rewritten.
+- **O10** (2026-07-20): formulation axis redefined (Tomáš) — R1 = best naive, R2 = best
+  procedural (same definitions → scaffold isolated); production-verbatim kept as optional R0.
+- **Parser-arm preliminary result** (2026-07-20, `docs/PARSER_ARM_RESULTS.md` +
+  `docs/PARSER_ARM_ERROR_ANALYSIS.md`): verdict acc 97.1 / P 96.6 / R 86.6 / F1 91.3; per gold
+  pair 92.1% found-exact, 0.2% found-wrong-distance, 7.8% missed. The misses are
+  **segmentation-driven** (split units miss 10.7% vs. 1.7% on whole units; 24/26 verdict FNs in
+  split units, all by losing the violating pair). K7/K8 sensitivity: negligible (F1 91.3→91.0).
 - Inherited from experiment_02 v3.1: K1–K5 (Katka 2026-07-16), O1 (production rule obtained),
   O3 (obsolete — no IAA needed under verification design), O6–O8 (ESO population / gold slice /
   data-root move), participial-aux rule fix, T = 6 as *maximum allowed* (violation ⇔ d > 6).

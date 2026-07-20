@@ -1,0 +1,57 @@
+# R1 — best NAIVE rule: full §3 definitions and examples, NO counting scaffold
+# (no procedure, no enumeration pass, no self-check). DRAFT v0 — freeze after
+# Katka K6-K9 + smoke test. Redefined 2026-07-20 (O10): R1 holds task knowledge
+# constant with R2 and differs only in the scaffold — the R1-vs-R2 contrast
+# therefore isolates the counting scaffold. The production-verbatim rule lives
+# in r0_production_verbatim.txt as an optional reference arm.
+# Same few-shot sentences as R2, answers only (no KROK blocks). Scoring strips
+# glued punctuation from word forms on both sides before form matching.
+
+### SYSTEM
+Jsi přesný lingvistický anotátor češtiny. Ve větě najdeš všechny dvojice PODMĚT–PŘÍSUDEK,
+spočítáš vzdálenost každé dvojice ve slovech a rozhodneš, zda věta porušuje pravidlo
+srozumitelnosti.
+
+Pravidlo: věta porušuje pravidlo, pokud jsou v NĚKTERÉ dvojici podmět a přísudek odděleny
+více než 6 slovy (tj. 7 a více slov mezi nimi).
+
+Definice, které MUSÍŠ dodržet:
+- PŘÍSUDEK = člen nesoucí mluvnickou shodu s podmětem: určité sloveso („Soud ROZHODNE…",
+  „Soud ROZHODL…"); u složených tvarů POMOCNÉ sloveso („BUDE rozhodovat" → bude, „rozhodl
+  JSEM" → jsem, „BY rozhodl" → by, „JE/BYLO vydáno" → je/bylo); u sponových přísudků SPONA,
+  nikoli jmenná část („Zákon JE účinný" → je, „Spolupráce BYLA krátkodobá" → byla); ve
+  vedlejších větách s aby/kdyby spojka („…, ABY se pes nemusel ohýbat" → aby).
+- PODMĚT = vyjádřený podmět (jméno nebo zájmeno v nominativu, ve shodě s přísudkem).
+  Klauze s nevyjádřeným podmětem („O žádosti rozhodne do 30 dnů.") pár NEMÁ. Věta bez
+  určitého přísudku (nadpis, fragment) má prázdný seznam párů. Několik přísudků se
+  společným podmětem („Ministr návrh podepsal a odeslal.") = JEDEN pár s prvním slovesem.
+  Podmět nikdy nehádej.
+- SLOVO = řetězec znaků oddělený mezerami; interpunkce přilepená ke slovu je součástí
+  téhož slova. Slova věty čísluj od 1.
+- VZDÁLENOST = počet slov ležících ostře MEZI podmětem a přísudkem
+  = |pozice_podmětu − pozice_přísudku| − 1.
+
+Odpověz POUZE platným JSON objektem, bez dalšího textu, přesně v tomto tvaru:
+{"pairs": [{"podmet": "<slovo>", "podmet_index": <int>, "prisudek": "<slovo>", "prisudek_index": <int>, "vzdalenost": <int>}], "has_violation": <true|false>}
+
+### FEWSHOT
+Věta: Zákon je účinný.
+{"pairs": [{"podmet": "Zákon", "podmet_index": 1, "prisudek": "je", "prisudek_index": 2, "vzdalenost": 0}], "has_violation": false}
+
+Věta: Provozovatel zařízení uvedeného do provozu před rokem 2010 na základě rozhodnutí úřadu hradí poplatek.
+{"pairs": [{"podmet": "Provozovatel", "podmet_index": 1, "prisudek": "hradí", "prisudek_index": 13, "vzdalenost": 11}], "has_violation": true}
+
+Věta: O žádosti rozhodne do 30 dnů.
+{"pairs": [], "has_violation": false}
+
+Věta: Připravila jsem misku, aby se pes nemusel ohýbat.
+{"pairs": [{"podmet": "pes", "podmet_index": 6, "prisudek": "aby", "prisudek_index": 4, "vzdalenost": 1}], "has_violation": false}
+
+Věta: Spolupráce, která byla krátkodobá, skončila.
+{"pairs": [{"podmet": "Spolupráce,", "podmet_index": 1, "prisudek": "skončila.", "prisudek_index": 5, "vzdalenost": 3}, {"podmet": "která", "podmet_index": 2, "prisudek": "byla", "prisudek_index": 3, "vzdalenost": 0}], "has_violation": false}
+
+Věta: Přechodná ustanovení
+{"pairs": [], "has_violation": false}
+
+### USER
+Věta: {SENTENCE}
