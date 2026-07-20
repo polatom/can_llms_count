@@ -1,71 +1,83 @@
-# Experiment 02 — Methodology (draft v1, for review)
+# Experiment 02 — Methodology (v3.1)
 
-Status: **draft v2 — §3 reviewed by Katka (2026-07-16); decisions K1–K5 and the aby/kdyby rule
-incorporated. Remaining open: T1–T4 (Tomáš, §12).** Self-contained: everything needed to run
-experiment_02 is defined here; experiment_01 is cited for motivation only, no artifacts are reused.
+Status: **v3.1 — converged design; §3 task definition reviewed and signed off by Katka
+(2026-07-16, except K6 provisional per §3.3); open items in §11.** Self-contained; experiment_01
+is cited for motivation only, no artifacts reused. Prior drafts in git history: v1 `b165f70`,
+v2 `0d6834c`. Deliberately simplified for a short paper: one question, one figure.
 
 ---
 
 ## 1. Goal and context
 
-**Main objective (practical):** find a reliable, affordable, maintainable way to measure the
-subject–predicate distance in Czech legal sentences — the validated proxy for comprehensibility
-that PONK-style rules need — and determine which of three candidate production pipelines should
-implement it.
+**Research question in one sentence:** *Can a pure-LLM rule — raw sentence in, verdict out, no
+pre- or post-processing — measure subject–predicate distance in unfiltered Czech legal text well
+enough to replace a deterministic parser pipeline, and how much model capability and how good a
+rule formulation does it take?*
 
-**Context.** Experiment_01 established, on a filtered (single-main-clause) sample of legal Czech:
-(1) LLMs' weak link is *counting*, not role identification — large open models name the right
-subject/predicate ~83–87% given a parse but still miscount the span ~28–36% of the time;
-(2) structured input helps a lot (+38–39 pts) but not to reliability;
-(3) the instability cannot be tuned away — majority voting does not improve accuracy;
-(4) UDPipe agrees with human gold ~99% on role labels where it commits (single-clause parses).
+**The two experimental axes:**
+- **Model capability** (ordered axis): open ~30B → open ~70B → frontier → frontier with
+  reasoning. "How low can we go?"
+- **Rule formulation** (categorical axis): the production-style prose rule vs. a procedural
+  rewrite of the same rule. Two points now; the formulation space (other definitions, other
+  scaffolds) is future work — explored further only if the procedural formulation wins (§12).
 
-Experiment_02 changes three things at once, deliberately:
-- **No linguistic filtering** — the eval set includes multi-clause sentences, pro-drop clauses,
-  coordination, fragments/headings: exactly the material a comprehensibility linter must handle.
-- **Predicate = finite verb** (Katka's definition, §3) — replacing exp_01's provisional
-  head-of-subject rule.
-- **Human gold as the primary standard** — silver (UDPipe) is demoted to secondary large-N support,
-  since silver is least trustworthy exactly on the newly-included complex sentences.
+**Practical motivation (SPRINT).** SPRINT rules are prose prompts written by lawyers; the app
+sends each sentence plus the rule prompt to an LLM and parses `{has_violation, reason,
+suggestion}` from the reply. The production distance rule (obtained: §5.2 R1) does not work well —
+the finding that motivated this work. The alternative — UDPipe plus a hand-coded extractor — is
+accurate but is *per-rule engineering*: code written and maintained per rule, only for phenomena a
+parser exposes. A pure-LLM rule is *per-rule prose*: deployable in today's SPRINT by editing rule
+text. The economics favor the LLM path wherever it is good enough; this experiment measures
+whether and when it is.
 
-## 2. Research questions
+**Scientific motivation (exp_01 sequel).** Experiment_01 showed on filtered (single-main-clause)
+legal Czech that the LLM bottleneck is *counting*, not role identification — large open models
+name the right words but miscount the span ~28–36% of the time even when handed the parse, and
+the instability cannot be tuned away. Two things exp_01 could not answer: (a) do
+frontier/reasoning models close the counting gap end-to-end? (b) does scaffolded prompting
+(explicit enumeration with a counter — the scratchpad/CoT-counting mechanism,
+`docs/RELATED_WORK.md` Thread A) close it at open-model sizes? Both are answered here, on harder
+(unfiltered) data and against human gold.
 
-- **RQ1 (identification):** Can LLMs identify subject–predicate pairs in *unfiltered*,
-  free-word-order Czech legal text, measured against human gold? Which linguistic phenomena
-  (pro-drop, coordination, non-SVO order, copular predicates, syncretism, fragments) drive failure?
-- **RQ2 (counting):** Is the counting bottleneck irreducible? Specifically: (a) does pre-numbering
-  the words in the prompt (externalizing the count into preprocessing) eliminate it for mid-size
-  open models? (b) does frontier scale and/or test-time reasoning eliminate it end-to-end?
-- **RQ3 (pipelines):** Which production pipeline gives the best accuracy × stability × cost ×
-  maintainability trade-off:
-  - **A — deterministic:** UDPipe → rule-based extractor (PONK-style); no LLM.
-  - **B — frontier end-to-end:** one prompt, raw text in, pairs + distances out.
-  - **C — hybrid:** cheap preprocessing (numbered word list, optional compact UDPipe hints) →
-    small/mid open LLM selects pairs by index → code computes distances.
+## 2. Research questions and hypotheses
+
+- **RQ1 (parity):** Does the best pure-LLM configuration reach the parser baseline at the verdict
+  level on unfiltered legal Czech?
+  **H1:** the frontier model with reasoning comes within ~5 pts of the parser baseline's verdict
+  accuracy. (Genuinely open: the parser baseline's own accuracy on unfiltered text is unknown —
+  §5.1 measures it.)
+- **RQ2 (capability floor):** How does verdict accuracy scale down the capability axis — what is
+  the least capable model that remains viable?
+  **H2:** accuracy degrades monotonically down the axis; ~30B is below viability under either
+  formulation. (The ≤8B regime is omitted as settled — exp_01: ≤16% naming, ~0% counting.)
+- **RQ3 (formulation effect):** How much does the procedural formulation buy at each capability
+  level?
+  **H3:** R2 beats R1 everywhere, and the gain *grows* with capability (echoing exp_01's H3:
+  scaffolding does not rescue weak models).
+- **RQ4 (mechanism, from scoring only):** Where do residual errors live?
+  **H4:** for open models, errors concentrate in counting (right words, wrong distance); frontier
+  reasoning shifts the residual to identification (wrong words, correctly counted).
 
 ## 3. Task definition
 
 **Unit of evaluation: the sentence** as segmented by UDPipe (KUK) or by the gold treebank (CLTT).
 Sentence segmentation of legal Czech is a known fallible upstream step (exp_01: UDPipe splits ~60%
-of CLTT gold sentences differently); it is held fixed here and inherited by all pipelines equally.
+of CLTT gold sentences differently); it is held fixed and inherited by all conditions equally.
 
 **Output per sentence: the set of all subject–predicate pairs** of finite clauses with an overt
 nominal subject — possibly empty (fragments, headings, verbless enumeration items) and possibly
 plural (multi-clause sentences, coordination of clauses). For each pair: subject word, predicate
-word, their 1-based word positions, and the distance.
+word, their 1-based word positions, the distance — plus the sentence-level verdict (§3.5).
 
-### 3.1 Predicate (Katka's definition — operationalized in UD; reviewed by Katka 2026-07-16)
+### 3.1 Predicate (Katka's definition — operationalized in UD; reviewed 2026-07-16)
 
-Per the paper draft (§ *Subject and predicate in free word order languages*): the predicate for
-measurement purposes is **the element that carries grammatical agreement with the subject** — the
-verb in finite form, or the auxiliary verb in analytic verb forms and modal constructions.
-Terminology (corrected per Katka's review): **copular predicates** (přísudek jmenný se sponou,
-*Petr je prezident*) and **verbo-nominal predicates** (light-verb constructions per Radimský,
-*Petr vystavil fakturu*) are two distinct types. For copular predicates we measure to **the
+The predicate for measurement purposes is **the element that carries grammatical agreement with
+the subject** — the verb in finite form, or the auxiliary verb in analytic verb forms and modal
+constructions. Terminology (per Katka's review): **copular predicates** (přísudek jmenný se
+sponou, *Petr je prezident*) and **verbo-nominal predicates** (light-verb constructions per
+Radimský, *Petr vystavil fakturu*) are distinct types. For copular predicates we measure to **the
 copula**, not the nominal part (note: this *reverses* exp_01's provisional rule); for
 verbo-nominal predicates, to the finite (light) verb.
-
-UD operationalization — for each clause:
 
 | clause type | example | measured predicate token |
 |---|---|---|
@@ -82,262 +94,316 @@ UD operationalization — for each clause:
 
 **Mechanical rule: the measured predicate is the finite element of the predicate complex** — the
 `aux`/`aux:pass`/`cop` child with `VerbForm=Fin` if the clause head has one, otherwise the clause
-head itself (then a finite verb or bare l-participle). No positional (leftmost) heuristic: in
-past-conditional forms the participial aux (*byl*) is `VerbForm=Part` and only the conditional
-*by/bys* is finite, so the rule selects it wherever it stands — including in questions (K1). Rare
-double-aux forms without a conditional (pluperfect *byl jsem přišel*, passive conditional *byl by
-vydán*) still contain exactly one finite AUX; the extraction code asserts uniqueness and logs any
-violation.
+head itself (then a finite verb or bare l-participle). No positional heuristic: in
+past-conditional forms only *by/bys* is finite (`byl` is `VerbForm=Part`), so the rule selects it
+wherever it stands, including in questions. Rare double-aux forms without a conditional
+(pluperfect *byl jsem přišel*, passive conditional *byl by vydán*) still contain exactly one
+finite AUX; the extraction code asserts uniqueness and logs violations.
 
 **aby/kdyby falls out for free:** in UD these conjunctions are multiword tokens — surface *aby* =
 `aby` (SCONJ, `mark`) + `by` (AUX, `Mood=Cnd|VerbForm=Fin`, `aux` of the clause head); verified in
-`cs_cltt` gold. The finite-element rule selects the `by` token, and the §3.4 token→word mapping
-assigns it the surface word *aby*/*kdyby* — implementing Katka's decision ("count the conjunction
-as the predicate; the *by* is inside it") with no special case.
+`cs_cltt` gold. The finite-element rule selects the `by` token and the §3.4 token→word mapping
+assigns it the surface word *aby*/*kdyby* — implementing Katka's decision with no special case.
 
-**Consequence note (metric semantics):** measuring to the agreement-bearing element means that for
-conditionals and 1st/2nd-person past forms the target is a second-position clitic (*by, jsem*),
-which sits early in the clause regardless of where the lexical verb is — distances there will be
-systematically shorter than under a measure-to-the-content-verb rule. In legislative text this
-bites rarely (legal Czech is overwhelmingly 3rd person, where the past tense has no auxiliary),
-but the annotation guidelines and the paper should state it.
+**Consequence note (metric semantics):** measuring to the agreement-bearing element means that
+for conditionals and 1st/2nd-person past forms the target is a second-position clitic (*by,
+jsem*), which sits early in the clause regardless of where the lexical verb is — systematically
+shorter distances than a measure-to-the-content-verb rule. In legislative text this bites rarely
+(legal Czech is overwhelmingly 3rd person, where past tense has no auxiliary), but the annotation
+guidelines and the paper must state it.
 
 ### 3.2 Subject
 
-The word bearing the `nsubj`/`nsubj:pass` relation to the clause head (the head word of the
-subject phrase; for coordinated subjects, the first conjunct — the UD head — confirmed, K3).
+The word bearing the `nsubj`/`nsubj:pass` relation to the clause head (head word of the subject
+phrase; coordinated subjects → the first conjunct, i.e. the UD head — confirmed, K3).
 
-### 3.3 Exclusions and null cases (inside sentences that are all kept)
+### 3.3 Null cases and exclusions (inside sentences that are all kept)
 
-- **Pro-drop clauses** (finite predicate, no overt subject): no pair is produced for that clause.
-  Systems must *not* hallucinate a subject — false positives are penalized via precision (§8).
+- **Pro-drop clauses** (finite predicate, no overt subject): no pair for that clause. Systems
+  must *not* hallucinate a subject — false positives are penalized via precision.
 - **Clausal subjects** (`csubj`): excluded from pairs (no single word position to measure from —
   confirmed, K4); counted and reported.
-- **Fragments / verbless headings:** gold = empty set. Correctly returning "no pairs" is scored.
+- **Fragments / verbless headings:** gold = empty set; correctly returning "no pairs" is scored.
+- **Shared-subject predicate coordination** (*Ministr návrh podepsal a odeslal* — one overt
+  subject, two finite verbs): **one pair — distance to the first verb** (the mechanical UD
+  default; only the first conjunct bears `nsubj`). *Provisional (K6): decided 2026-07-17 in
+  Katka's absence; to be confirmed with her later.* **Insurance against a later reversal:**
+  annotators additionally mark the further conjunct verbs (flagged, not scored), so *both*
+  conventions are recomputable from the stored gold without re-annotation; headline numbers use
+  the one-pair convention and a sensitivity check under the per-conjunct convention is reported.
 
-### 3.4 Distance
+### 3.4 Distance and word positions
 
-`d = |pos(subject) − pos(predicate)| − 1`, counted in **whitespace-separated words** (1-based;
-punctuation glued to a word belongs to that word; multiword tokens like *aby* = one word).
+`d = |pos(subject) − pos(predicate)| − 1`, in **whitespace-separated words** (1-based;
+punctuation glued to a word belongs to it; multiword tokens like *aby* = one word).
 
-Token→word mapping (from CoNLL-U): collapse multiword-token ranges into one surface unit, then
-increment the word counter only after units not marked `SpaceAfter=No`. (Port of exp_01's
-`assign_word_indices`, validated there with zero mismatches against raw text.) The same code
-generates the numbered word lists used in pipeline C prompts and in annotation sheets, so gold,
-prompts, and scoring share one coordinate system.
+Token→word mapping (for gold, from CoNLL-U): collapse multiword-token ranges into one surface
+unit, then increment the word counter only after units not marked `SpaceAfter=No` (port of
+exp_01's `assign_word_indices`, validated there with zero mismatches). Gold, scoring, and prompt
+few-shots share this one coordinate system.
+
+### 3.5 Verdict
+
+Per sentence: **violation ⇔ any pair has d > T, with T = 6** — i.e. seven or more words between
+subject and predicate. This matches both PONK ("limit distance 6" = 6 is the maximum allowed,
+K5) and the production rule R1 ("separated by at least 7 words" / "more than 6 words").
+(Note: v3 wrote `d ≥ 6`, an off-by-one against both sources — caught during the R1 review.)
+
+### 3.6 Relation to UD/UDPipe (does our definition "match" the parser's?)
+
+UDPipe does not define "subject" or "predicate" at the level of §3.1 — it produces Universal
+Dependencies annotations (`nsubj`, `aux`, `cop`, `VerbForm`, …) per the **documented UD
+guidelines** (universaldependencies.org; Czech-PDT conversion conventions). No reverse
+engineering is needed: the labels' semantics are public. The interpretation layer — mapping UD
+output to Katka's subject/predicate — is **ours alone**, and it lives in exactly one place: the
+§3.1 extraction rule of the parser arm.
+
+Crucially, **the human gold is definition-native and UD-free**: annotators mark pairs on the raw
+(pre-numbered) text under Katka's definition, never seeing a parse tree. So there is no
+"interpretation on both sides" — the gold side has none. The parser arm's measured error against
+gold therefore *includes* any mismatch between the UD-based extraction rule and the linguistic
+definition, alongside genuine parse errors; both are part of the honest baseline number (and the
+error analysis separates them where possible: extraction-rule mismatches are systematic per
+construction type, parse errors are not). Framed for the paper: both error sources are part of
+the *real engineering cost of the deterministic path* — a deployed parser rule pays for its
+UD-interpretation layer exactly as it pays for parse errors.
 
 ## 4. Data
 
 **Source:** KUK 1.0 (four sub-corpora, UDPipe-parsed silver) + CLTT 2.0 / `cs_cltt` (human gold
 trees). Fresh sample; nothing reused from exp_01.
 
-**Filtering: none linguistic.** Only technical exclusions, each logged with counts:
-exact-duplicate sentences after whitespace normalization (legal boilerplate), and length > 200
-words (context sanity; expected rare). Fragments, headings, multi-clause monsters all stay in.
+### 4.1 Main eval set — random, unfiltered (N = 640, with an audit gate)
 
-### 4.1 Main eval set (silver, N = 640)
+**Uniform random sample of sentences** from unfiltered KUK. No linguistic filtering and no
+stratification (decision 2026-07-17: representativeness must be self-justifying; the verdict
+metric needs realistic prevalence). Only technical exclusions, logged with counts:
+exact-duplicate sentences after whitespace normalization (legal boilerplate), sentences > 200
+words (context sanity; expected rare). Multi-clause monsters, fragments, headings all stay in.
 
-Stratified sample from unfiltered KUK:
-- **Strata:** number of finite clauses (0 / 1 / 2 / 3+, from silver) × sentence length
-  (≤10 / 11–25 / 26–45 / 46+ words), with the multi-clause and long cells oversampled relative to
-  population (they are the PONK-relevant tail), and the distance tail of the first pair oversampled
-  within the 1-clause stratum (continuity with exp_01's H4-style analysis).
-- **Sub-corpora:** balanced 160 × 4 (continuity with exp_01; population-proportional weights
-  reported as a secondary view). **T3**
+**Audit gate (before any LLM run):** report per-phenomenon counts on the sample (clause counts,
+copular, pro-drop, non-SVO candidates, fragments, near-threshold distances per silver) **and the
+verdict prevalence** (share of sentences with d > 6 per silver): with low prevalence the
+precision/recall CIs on the random gold-140 get wide (~15% prevalence → only ~20 positive items).
+If phenomena or positives are too thin at N = 640, extend the *random* sample and/or the random
+gold slice *then* (harness resumable; decision documented) — never stratify, never after results
+are known. Sub-corpus, length, clause count etc. kept as metadata for post-hoc breakdowns.
 
 ### 4.2 Human gold (primary standard)
 
-- **KUK-200 (new annotation, Katka):** 140 sentences sampled from the 640 (proportionally across
-  strata — enables direct silver-vs-gold noise measurement on eval items) + 60 targeted at rare
-  phenomena: copular predicates, pro-drop-heavy multi-clause sentences, non-SVO orders, syncretic
-  nominative/accusative candidates, fragments. Annotation = mark all pairs by word index on
-  pre-numbered word lists (tooling: a simple TSV/HTML sheet; guidelines doc to be drafted as
-  `ANNOTATION_GUIDELINES.md` after §3 sign-off).
-- **IAA:** 50 of the 200 double-annotated (second annotator: Bára? **T4**); report pair-level
-  agreement and distance agreement.
-- **CLTT-derived gold (free):** apply the §3 rule mechanically to `cs_cltt` gold trees →
-  gold pairs for ~1k unfiltered legal sentences at zero annotation cost. Katka reviews ~20 worked
-  examples (stratified over the §3.1 table rows) instead of annotating. Domain caveat (accounting
-  law) reported.
+- **KUK-200 (new annotation):** 140 sentences sampled at random from the 640 (gold ⊂ eval set →
+  parser-arm accuracy measured directly on eval items) + 60 **targeted** at rare phenomena
+  (copular, pro-drop-heavy multi-clause, non-SVO, syncretic nominatives, fragments, aby-clauses).
+  The targeted 60 are quarantined: per-phenomenon diagnosis only, never pooled into headline
+  metrics. Annotation on pre-numbered word sheets under §3 (`ANNOTATION_GUIDELINES.md`, to
+  draft); annotator: Katka.
+- **IAA:** 50 of the 200 double-annotated. Second annotator: **Tomáš** (O3). A non-linguist
+  second annotator is acceptable and even informative here: with a signed-off definition and
+  written guidelines, linguist × trained-non-linguist agreement measures exactly what SPRINT
+  needs — whether the rule's definition is executable by a careful reader, not only by its
+  author. Annotator profiles reported; disagreements adjudicated by Katka later where feasible.
+- **CLTT-derived gold (free):** the §3 rule applied mechanically to `cs_cltt` gold trees → gold
+  pairs for ~1k unfiltered legal sentences at zero annotation cost; Katka reviews ~20 worked
+  examples (one per §3.1 table row where attested). Domain caveat (accounting/tax law) reported.
 
-### 4.3 Silver noise floor, re-measured
+### 4.3 Descriptive statistics — the metric family (one table, no LLM runs)
 
-Exp_01's 99.3% parser-agreement figure was measured on single-clause commits only. Re-run the
-noise floor on **unfiltered** CLTT: UDPipe-parse the raw text, extract pairs per §3, compare
-against CLTT-derived gold. This yields the honest accuracy of **pipeline A** on complex legal
-Czech — a genuinely open number, and the benchmark the LLM pipelines must beat or approach.
+From the UDPipe parses of the 640: distribution of subject–predicate distance, plus the sibling
+counting metrics a comprehensibility linter would use (max tree depth, subordinate-clause count,
+coordination density, passive count per sentence). Purpose: (a) situates the distance rule in the
+family of counting rules SPRINT needs; (b) documents how often the T = 6 rule fires on real
+unfiltered text (prevalence matters for the verdict metric).
 
-## 5. Pipelines (RQ3) and prompt conditions
+## 5. Conditions
 
-All pipelines produce the same output schema: JSON list of
-`{"podmet": str, "podmet_index": int, "prisudek": str, "prisudek_index": int, "vzdalenost": int}`
-(empty list allowed).
+Two arms, deliberately minimal.
 
-**Prompt style (B and C): procedural, pseudo-code steps.** One prompt formulation per condition,
-structured as an explicit step sequence rather than a single instruction:
-1. identify all predicates (§3.1 definition + examples);
-2. for each predicate, identify its overt subject if any (§3.2 definition + examples);
-3. branch on what was found — no pair (pro-drop, fragment) → empty list; one pair; multiple
-   pairs (multi-clause, coordination) → list all.
-The branching is not prompt sophistication for its own sake — it mirrors the §3.3 task definition
-that unfiltered text forces. Few-shot examples cover each branch and each tricky predicate type:
-simple SVO, copular, analytic form, conditional, aby/kdyby clause (predicate = the conjunction
-word), pro-drop (no pair), multi-clause (two pairs), fragment (empty).
+### 5.1 Parser arm — deterministic baseline (no LLM)
 
-**Design principle (from exp_01): the model never produces a number it had to count for.** Every
-count is either precomputed into the input (word numbering, C) or derived from the model's output
-in code (subtraction, validation). No prompt asks the model to count words, simulate a regex, or
-"execute" a code snippet — simulated execution is the exact skill exp_01 showed to be broken, and
-real code execution (tool use) is a different pipeline class (§13).
+UDPipe 2 (same model as KUK silver) → §3 extraction code → pairs, distances, verdict. Zero
+variance, one run. **Its accuracy against gold-200 is itself an unknown this experiment
+measures** — exp_01's 99.3% noise floor was computed on easy single-clause commits only;
+unfiltered complex text will be lower, and the gold is definition-native (§3.6), so the number
+also absorbs any UD-interpretation mismatch. This directly answers "how do we know the baseline
+is right": we don't assume it — the KUK-200 gold exists precisely to measure it (CLTT-derived
+gold adds free volume in an adjacent domain; a second-parser ensemble as a robustness upgrade is
+exp_03 material). Implementation complexity (LOC, rules, documented edge cases) recorded as the
+maintainability datum.
 
-- **A — UDPipe + deterministic extractor.** UDPipe 2 (same model as KUK silver) → §3 extraction
-  code → pairs + distances. Zero LLM, zero variance. Its implementation complexity (LOC, rules,
-  edge cases handled) is *recorded* as data for the maintainability comparison.
-- **B — frontier end-to-end.** Raw sentence text in the prompt; model identifies pairs, positions,
-  and computes distances itself. This is "pipeline 2" (expensive but simple). Run with 2–3 frontier
-  models; for one of them, both reasoning-off and reasoning-on (RQ2b).
-- **C — hybrid (the target).** Two input variants, both with distances computed **in code** from
-  the model-selected indices (`vzdalenost` requested from the model only as a consistency check,
-  never scored as the pipeline output):
-  - **C1 — numbered words:** prompt contains the pre-numbered word list (`1:Zákon 2:je 3:účinný.`);
-    the model selects pairs by index. Tests whether externalizing the count is sufficient.
-  - **C2 — numbered words + parse hints:** C1 plus a compact, human-readable UDPipe extract —
-    only `nsubj`, `aux`, `cop`, and clause-head edges, rendered as `word#i ←nsubj— word#j` lines.
-    No full CoNLL-U anywhere (exp_01 showed it is unstable to generate and unnecessary to give).
+### 5.2 LLM arm — pure-LLM rule (prompt-only, SPRINT-compatible)
 
-**Post-processing validation (all LLM pipelines, deterministic, in code):**
-1. schema check (valid JSON, required fields, integer indices);
-2. index bounds (1 ≤ index ≤ n_words — subsumes "distance < sentence length");
-3. subject index ≠ predicate index;
-4. **form-at-index check:** the reported word form must equal the word actually at the reported
-   index. This catches exp_01's signature failure (right word, wrong position) deterministically.
-Validation results are *recorded* for every generation (catch rates by check, model, condition —
-reported as a finding). **Optional C+retry variant:** one re-prompt with the specific validation
-error appended; implemented only if trace analysis shows validation catches a meaningful share of
-errors (decided after the main run, no re-run needed for the analysis itself). Validation flags
-and retries; it never auto-corrects from the parse — that would collapse C into A.
+Raw sentence in the prompt; model returns JSON with the pair list **and** the verdict. No
+preprocessing, no post-computation: the model's own `has_violation` is the scored verdict (SPRINT
+deployment semantics). Code-side validation (schema, index bounds, form-at-index) is **recorded
+as measurement, never corrected** — catch rates are a reported finding, since in SPRINT nothing
+would catch them.
 
-**Dropped from exp_01:** self-generated CoNLL-U (least stable regime; diagnostic job done),
-full-CoNLL-U-given (superseded by C2), LLM-verifies/repairs-UDPipe (out of scope).
+Two **rule formulations** per model (the categorical axis):
 
-## 6. RQ2 counting probes (subset only)
+- **R1 — production rule (baseline formulation):** the real SPRINT rule
+  `docs/sprint-rule-C4DHI_Predicate-Subject_Distance.json` (obtained 2026-07-17 — O1), **adapted
+  to Czech**: the export's conditions/definition/instructions are in English with English (EU
+  firearms directive) test sentences, so R1 is a faithful Czech translation that deliberately
+  preserves the rule's level of (under)specification — no predicate/subject definition, no
+  counting procedure, "interdependent" left vague. Known defects kept (they are the production
+  reality being measured) except one repair: the garbled `teaching_examples` entry (two examples
+  merged mid-sentence in the export) is replaced by its evident intended form, flagged to KMH.
+- **R2 — procedural rule:** the same rule rewritten as an explicit procedure (the SPRINT `_mod`
+  negation-rule pattern; literature grounding in `docs/RELATED_WORK.md`):
+  1. list every finite clause; for each, identify the predicate token per §3.1 (definition +
+     examples for each tricky type: copular, analytic, conditional, aby-clause);
+  2. for each predicate, identify the overt subject if any (agreement, nominative; pro-drop →
+     no pair);
+  3. **enumerate the sentence word by word with a running counter** (`1: Zákon`, `2: je`, …) —
+     the self-enumeration scratchpad;
+  4. read off the two positions from the enumeration, subtract, compare with T = 6, output
+     pairs + verdict.
+  Few-shot examples cover: simple SVO, copular, conditional, aby/kdyby clause, pro-drop (no
+  pair), multi-clause (two pairs), fragment (empty list), one long sentence with d > 6.
 
-On a ~200-sentence subset (stratified by length), models from B and C answer isolated probes:
+One fixed formulation each (no prompt sweeps); shared output schema:
+`{"pairs": [{"podmet": str, "podmet_index": int, "prisudek": str, "prisudek_index": int,
+"vzdalenost": int}], "has_violation": bool}`.
+R1-vs-R2 varies definition *and* scaffold together, deliberately: R2 is "the best rule a lawyer
+could write", not a factorized ablation (Ginn & Palmer 2025 suggest rules and examples interact;
+see RELATED_WORK Thread B). The paper states this.
 
-- **P1 — locate:** "What is the word position of *X*?" (endpoint word given, occurrence
-  disambiguated by a context snippet). Exp_01 says this is the broken skill (~55% at 70B).
-- **P2 — count between:** both endpoint words given, return the distance.
-- **P3 — subtract:** two positions given, return |p−q|−1 (arithmetic control; expected ~100%).
+**Dropped by design** (v2→v3): any pre/post-processing around the LLM (pre-numbered input with
+code-side arithmetic — its mechanistic question is answered by scoring decomposition instead,
+§7); parse-hint prompts; the isolated counting-probe battery; validation-triggered retries.
 
-Run with reasoning-off and reasoning-on where available. P1/P2/P3 decompose *count = locate +
-subtract* and localize whatever failure remains at frontier scale.
+## 6. Models and run protocol
 
-## 7. Models (verify availability/pricing on OpenRouter at implementation time)
-
-| role | candidates | runs |
+| capability slot | candidates (verify on OpenRouter at run time — O2) | modes |
 |---|---|---|
-| frontier (pipeline B) | 2–3 of: OpenAI GPT-5.x, Anthropic Claude Sonnet/Opus 4.x, xAI Grok 4, Google Gemini 3 | 3 × temp 0 (or provider default if temp unsupported) |
-| frontier reasoning toggle (B + probes) | one of the above with effort/thinking low ↔ high | 3 × each mode |
-| open anchor (B-style raw + C1 + C2) | Qwen-2.5-72B (bridge to exp_01) | 3 × temp 0, fp8, provider-pinned |
-| open mid (C1 + C2) | one of ~30B class, e.g. Qwen3-32B / Gemma-3-27B | 3 × temp 0, pinned |
-| open small (C1 + C2) | one of ~8B class, modern | 3 × temp 0, pinned |
+| frontier | one of: OpenAI GPT-5.x / Anthropic Claude Opus-Sonnet 4.x / Google Gemini 3 / xAI Grok 4 | reasoning **on** and **off** (same model — cleanest test-time-compute contrast) |
+| open ~70B | Qwen-2.5-72B-Instruct (anchor, bridges exp_01) | standard |
+| open ~30B | Qwen3-32B or Gemma-3-27B | standard |
 
-Decoding: temperature 0 and pinned provider+quantization wherever the API allows; for reasoning
-models, record the actual sampling/effort parameters and treat run-to-run spread as a measured
-property (it is part of the RQ3 stability criterion, not a nuisance to hide). Full prompt+response
-traces and real `usage.cost` captured as in exp_01.
+= **4 model-modes × 2 formulations × 3 runs × 640 sentences = 15,360 generations.**
+The ≤8B regime is deliberately omitted: exp_01 settled it (≤16% naming on raw text, ~0% exact
+counting even given the parse), and unfiltered text is strictly harder; if the figure needs the
+floor point, backfilling 8B later is cheap and the harness supports it.
 
-## 8. Metrics
+Decoding: temperature 0 and pinned provider+quantization where the API allows; for the reasoning
+mode, record actual sampling/effort parameters and treat run-to-run spread as a measured property.
+Full prompt+response traces and real `usage.cost` captured (as exp_01). Cost estimate: open
+models single-digit USD; frontier with reasoning dominates — **$50–200** total.
 
-**Identification (RQ1) — pair-level P/R/F1** against gold. A predicted pair matches a gold pair by
-*word form* of both endpoints (order-insensitive within the pair; greedy alignment, ties broken by
-index proximity). Strict index-based matching reported separately — the gap between form-based and
-index-based matching *is* the positioning failure, so keeping both is the exp_01 decomposition in
-metric form.
+**Run-consistency protocol (anti-caching).** Firing an identical prompt 3× back-to-back risks
+provider-side effects (prompt/KV caching, request coalescing) that could artificially inflate
+run-consistency. Mitigations: (a) runs executed as **separate full passes** (complete run 1 over
+all items, then run 2, then run 3), giving temporal separation; (b) item order **shuffled per
+pass**; (c) provider prompt-caching disabled where the API exposes a control, and cache-hit
+fields in responses logged where reported; (d) provider/system fingerprints and latencies logged
+per call. Interpretation is asymmetric and stated in the paper: caching can only *inflate*
+consistency, so observed *in*stability is a lower bound on the real thing, while
+perfect-consistency claims are checked against the cache-hit/latency logs.
 
-**Distance (RQ2) — on form-matched pairs:** exact / ±1 / MAE. Plus the probe accuracies (§6).
+## 7. Metrics and analysis
 
-**Practical rule verdict (RQ3, secondary):** per sentence, "flag if any pair has d ≥ T" with
-**T = 6** — PONK's current limit distance (Katka, K5); report flag agreement with gold. This is
-the metric closest to what a deployed linter does.
+**Primary — verdict quality vs. gold-200 (random 140) at T = 6 (violation ⇔ d > 6):** accuracy,
+precision, recall, F1 of `has_violation`. This is what a deployed SPRINT rule delivers. The
+parser arm is scored identically.
 
-**Stability:** across the 3 runs — exact-set match of the full pair list; per-pair distance spread.
+**Secondary — measurement quality on the same items:**
+- pair identification P/R/F1, matched by **word form** of both endpoints (greedy, ties by index
+  proximity); index-based matching reported separately — the form/index gap *is* the positioning
+  failure;
+- distance exact / ±1 / MAE on form-matched pairs;
+- **decomposition (H4):** distance-correct *given* both endpoints correctly named — the exp_01
+  instrument, per model-mode × formulation.
 
-**Cost & complexity:** real USD per 1k sentences per pipeline; latency; for A, implementation
-complexity (LOC / rules / documented edge cases) as the maintainability datum.
+**Stability:** across 3 runs — verdict flip rate; exact-set match of pair lists (interpreted per
+§6 anti-caching notes).
+**Cost:** real USD per 1k sentences per condition; latency.
+**Validation catch-rates:** % of generations failing schema / bounds / form-at-index, per
+condition (reported, not corrected).
+**Breakdowns:** phenomenon flags (copular, pro-drop present, non-SVO, coordination, fragment,
+aby-clause), clause count, length, distance band (especially near-threshold d ∈ [4, 9]),
+sub-corpus. Targeted-60 and CLTT-derived gold: diagnosis only, reported separately.
 
-**Breakdowns:** by clause count, length bucket, distance bucket, sub-corpus, and phenomenon flags
-(copular, pro-drop present, non-SVO, coordination, fragment) — phenomenon flags derived from
-silver, verified on gold subset.
+**The one figure:** verdict accuracy (y) vs. capability (x: 30B → 70B → frontier →
+frontier+reasoning), two curves (R1, R2), dashed horizontal line = parser baseline with its CI;
+a small inset (or second panel) with the H4 decomposition (identification vs. counting share of
+residual error) so the mechanism claim needs no extra figure. McNemar on paired verdicts for the
+key comparisons (R2 vs. R1 per model; best-LLM vs. parser baseline).
 
-## 9. Hypotheses (falsifiable, pre-registered here)
+**Statistical power (stated up front, checked at the audit gate):** with n = 140 paired verdicts,
+McNemar detects differences of roughly ~8–10 pts at α = 0.05 with reasonable power; ~5 pt
+differences will not be resolvable on gold — the paper reports CIs and avoids overclaiming close
+calls. Precision/recall CIs additionally depend on violation prevalence (§4.1 audit gate); if
+prevalence is low, the random gold slice is enlarged, not stratified.
 
-- **H1 (identification degrades with structure):** pair F1 drops with clause count and on
-  pro-drop-containing sentences; the dominant new error class is hallucinated subjects in pro-drop
-  clauses and missed pairs in embedded/coordinated clauses.
-- **H2 (externalized counting works):** with numbered-word input (C1/C2), distance accuracy *on
-  correctly identified pairs* is ≥ 95% even for the ~8B model — i.e. the counting bottleneck is
-  eliminated by preprocessing, not by scale. (Exp_01 predicts this: naming was never the main
-  failure; positioning and arithmetic were, and both are externalized.)
-- **H3 (reasoning helps counting, at a price):** frontier reasoning-on substantially improves
-  end-to-end distance accuracy over reasoning-off (probes P1/P2 localize where), but at a large
-  cost multiple and without reaching pipeline A's stability.
-- **H4 (pipeline ranking):** on human gold, A ≥ C2 > C1 ≫ B-non-reasoning for exact distance;
-  C2 lands within ~5 pts of A while replacing A's hand-coded tree rules with a prompt. (If instead
-  A clearly dominates C2 even on unfiltered text, that *is* the paper's answer: keep the linter
-  deterministic.)
+**Qualitative error pass:** 20–30 residual errors of the best LLM configuration and of the parser
+arm, hand-categorized by phenomenon (feeds the paper's error-analysis section and exp_03's
+inventory).
 
-## 10. Relationship to the joint paper
+## 8. Execution plan
 
-- RQ1 → pays off Katka's free-word-order section (per-phenomenon identification results).
-- RQ2 → the "can LLMs count" arc continued to frontier/reasoning scale; probes give the mechanism.
-- RQ3 → the abstract's "how traditional NLP tools and LLMs can be used together", answered with a
-  decision matrix (accuracy × stability × cost × maintainability) instead of a vague hybrid claim.
-- Gold data (KUK-200 + CLTT-derived pairs + IAA) → the draft's "Golden Truth Data" experiment item
-  and a citable data contribution.
+1. Sampling + dedup; audit gate (§4.1); freeze eval-640 (`data/eval/`). Descriptive table (§4.3).
+2. Extraction code (parser arm) incl. §3.1 finite-element rule + assertions; run on eval-640 and
+   on CLTT; worked examples for Katka (~20); freeze `ANNOTATION_GUIDELINES.md` (K6 encoded as
+   provisional).
+3. Annotation sheets (pre-numbered words) → Katka: 140 random + 60 targeted; 50 double-annotated
+   (second annotator: Tomáš).
+4. R1 Czech adaptation + R2 written; frozen after a 20-sentence smoke test (format compliance
+   only — no metric peeking); model roster + providers pinned and recorded.
+5. Full grid (15,360 generations) as three shuffled passes per condition (§6 protocol), resumable
+   harness with traces (port of exp_01 `run_llm.py`).
+6. Scoring, figure, breakdowns; error inventory exported for experiment_03.
 
-## 11. Budget and scale (order of magnitude)
+## 9. Deliverables
 
-~640 × (B: 3–4 model-modes × 3 runs) + ~640 × (C: 3 models × 2 variants × 3 runs) + probes
-(~200 × ~6 model-modes × 3 probes) ≈ **~15k generations** (vs. 23k in exp_01). Cost dominated by
-frontier + reasoning tokens: estimate **$150–500** (exp_01 open-model baseline was $7.73; frontier
-per-token prices are 20–100×, reasoning inflates output tokens further). Real cost captured from
-`usage`; not a hard constraint per Tomáš.
+1. **The figure + the recommendation:** the least capable model × formulation (if any) whose
+   verdict quality reaches the parser baseline — or the finding that none does, which settles
+   the question in favor of the parser pipeline with unfiltered-text evidence.
+2. **The R2 rule template** in SPRINT `prompt_content` format, directly usable in the app.
+3. **Gold data:** KUK-200 human-annotated pairs under the signed-off §3 definition + IAA figures
+   + CLTT-derived gold pairs — the first human gold for this task.
+4. **The honest parser-baseline number** on *unfiltered* legal Czech — the quantified headroom
+   that motivates (or kills) experiment_03.
+5. Full traces, costs, and code, as in exp_01.
 
-## 12. Open questions and decision record
+## 10. Relationship to experiment_03 and the joint paper
 
-**Resolved — Katka's review, 2026-07-16** (decisions incorporated in §3.1/§3.2/§3.3/§8):
-- **K1 (multiple auxiliaries):** measure to the conditional AUX *by/bych/bys/…*, which is **not**
-  necessarily leftmost (questions: *Byl bys šel …?*). It carries person agreement with the subject
-  (*byl* agrees only in number/gender). Implemented positionally-agnostic via the finite-element
-  rule. Her side-question — are there multi-aux constructions without conditional *by*? — is
-  handled by the same rule: rare double-aux forms (pluperfect *byl jsem přišel*, passive
-  conditional *byl by vydán*) still contain exactly one finite AUX.
-- **K2 (conditional *by* as target):** confirmed. Caveat recorded: 3rd-person *by* is
-  form-ambiguous between sg/pl; other persons have unique forms (*bych, bys, bychom, byste*).
-- **K3 (coordinated subjects):** confirmed — first conjunct (UD head).
-- **K4 (csubj):** confirmed — exclude from pairs, report counts (no principled measuring point).
-- **K5 (threshold):** **T = 6**, PONK's current subject–predicate limit distance.
-- **New from review — aby/kdyby clauses:** conjunctions of the *aby/kdyby* type absorb the
-  conditional AUX and agree with the subject (*abych/abys/…*); subject may or may not be overt.
-  Decision: the measured predicate is the conjunction word (§3.1 — falls out of the MWT
-  token→word mapping automatically).
-- **Terminology fix (§3.1):** verbo-nominal (light-verb, *vystavil fakturu*) ≠ copular
-  (*je prezident*) — two distinct predicate types; both now correctly named in the table.
+- **exp_03 (separate paper, `../experiment_03/METHODOLOGY.md`):** the LLM-boost question on an
+  enrichment-sampled hard-case set — powered by exp_02's error inventory, annotation protocol,
+  and the measured parser-baseline headroom. Also inherits the semantic-triage module.
+- **Joint paper mapping:** Katka's free-word-order section → identification results + phenomenon
+  breakdowns; "Golden Truth Data" → §4.2; the experiments section → the figure; the abstract's
+  "LLMs and traditional tools together" → the per-rule-prose vs. per-rule-engineering economics
+  + exp_03 outlook.
 
-For **Tomáš** (open):
-- **T1:** budget ceiling for the frontier roster (pick 2 vs. 3 frontier models)?
-- **T2:** which frontier models exactly (availability + API knobs to be verified at run time)?
-- **T3:** sub-corpora balanced 160×4 (continuity) vs. population-proportional — keep balanced?
-- **T4:** second annotator for the IAA subset — Bára?
+## 11. Open items and decision record
 
-## 13. Out of scope (explicitly)
+**Open:**
+- **O2:** frontier model pick + API knobs (reasoning toggle, temp support, cache controls) —
+  verify at run time.
+- **O5:** flag the garbled `teaching_examples` in the C4DHI export back to KMH; confirm the rule
+  is also deployed for Czech text (the export's testset is English — see §5.2 R1 note).
 
-Surprisal/DLT-style comprehensibility metrics (next paper); sentence-segmentation study (upstream,
-own paper — segmentation is held fixed and its caveat reported); LLM-repairs-UDPipe experiments;
-fine-tuning Czech legal models; prompt-engineering sweeps beyond the C1/C2 contrast;
-**tool-use / code-interpreter pipelines** (model executing real code via function calling): a
-different architecture class, and for this task strictly dominated by pre-numbering + code
-post-processing — the only computation left after identification is one subtraction. (Asking the
-model to *simulate* code/regex execution in-prompt is not execution and is excluded by the §5
-design principle.)
+**Resolved:**
+- **O1** (2026-07-17): production rule obtained → `docs/sprint-rule-C4DHI_Predicate-Subject_Distance.json`.
+  Review findings: (a) rule text and testset are **English** (EU directive sentences) → R1 =
+  faithful Czech adaptation, §5.2; (b) threshold semantics "at least 7 words between" → §3.5
+  fixed to *violation ⇔ d > 6* (v3 had an off-by-one); (c) one `teaching_examples` entry is
+  garbled (two examples merged) → repaired in R1, flagged (O5); (d) no operational definition of
+  predicate/subject/clause — preserved in R1 by design, it is the production reality R2 is
+  measured against.
+- **O3** (2026-07-17): second annotator for IAA-50 = **Tomáš** (rationale in §4.2).
+- **O4/K6** (2026-07-17, provisional): shared-subject predicate coordination → **one pair,
+  distance to the first verb**; to be confirmed with Katka (§3.3).
+- Katka's review (2026-07-16): K1 conditional aux not leftmost; K2 *by* confirmed; K3 first
+  conjunct; K4 csubj excluded; K5 T = 6 (as *maximum allowed*, see §3.5); aby/kdyby = conjunction
+  word; verbo-nominal ≠ copular.
+
+## 12. Out of scope (explicitly)
+
+Pre/post-processing around the LLM (numbered-input variants, code-side arithmetic, retries);
+parse-hint prompts; tool use / code execution; fine-tuning; **additional rule formulations beyond
+R1/R2** (the formulation axis is explored further only if R2 wins — e.g. alternative
+definitions, factorized definition-vs-scaffold ablations); ≤8B models (settled by exp_01;
+backfill possible); LLM-repairs-UDPipe (→ exp_03); semantic triage of flags (→ exp_03, needs
+human difficulty data); surprisal/DLT metrics (future work); sentence-segmentation study (held
+fixed, caveat reported).

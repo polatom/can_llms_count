@@ -1,0 +1,53 @@
+{
+  "format": "sprint.rules.export",
+  "version": 3,
+  "exported_at": "2026-05-28T10:18:23.774642+00:00Z",
+  "exported_by": {
+    "user_id": 548,
+    "email": "kh@sprint.com"
+  },
+  "scope": "single",
+  "category_definitions": [],
+  "rules": [
+    {
+      "name": "C4DHI Predicate-Subject Distance",
+      "document_section_application": "sentence",
+      "status": "draft",
+      "prompt_content": {
+        "testset": [
+          {
+            "sentence": "As regards firearms classified in point 6 of category A, Member States applying a military system based on general conscription and having in place over the last 50 years a system of transfer of military firearms to persons leaving the army after fulfilling their military duties may grant to those persons, in their capacity as a target shooter, an authorisation to keep one firearm used during the mandatory military period.",
+            "expected_violation": true
+          },
+          {
+            "sentence": "Whereas the mutual confidence in the field of the protection of the safety of persons which these rules will generate between Member States will be the greater if they are underpinned by partially harmonised legislation.",
+            "expected_violation": true
+          },
+          {
+            "sentence": "Member States shall ensure that an authorisation to acquire and an authorisation to possess a firearm classified in category B shall be withdrawn.",
+            "expected_violation": true
+          },
+          {
+            "sentence": "Similarly, there is virtually no risk of irreversibly deactivated firearms and replicas of old firearms being misused.",
+            "expected_violation": false
+          },
+          {
+            "sentence": "Without prejudice to Article 2(2), Member States shall take all appropriate measures to prohibit the acquisition and possession of the firearms.",
+            "expected_violation": false
+          },
+          {
+            "sentence": "This action is illegal.",
+            "expected_violation": false
+          }
+        ],
+        "conditions": "(1) There is a clause that contains a predicate and a subject. (2) The predicate and the subject are separated by at least 7 words. (3) The order of predicate and subject is not decisive. (4) The predicate and the subject are interdependent.",
+        "definition": "Identifies clauses in which the predicate and subject are separated by more than 6 words.",
+        "instructions": "Rewrite the sentence in such a way that the subject and the predicate are closer to either other. They should be separated by no more than 6 words. Respect the semantics of the text and the syntactic rules.",
+        "teaching_examples": [
+          "The witness, who had always had a very timid and shy appearance before, was confident that day.\t\nThe product, In order to increase the traceability of all firearms and essential components and to facilitate their free movement, should be marked with a clear, permanent and unique marking. -> The witness was confident that they, although he had always had a very timid and shy appearance before.\t\nIn order to increase the traceability of all firearms and essential components and to facilitate their free movement, those products should be marked with a clear, permanent and unique marking."
+        ]
+      },
+      "categories": []
+    }
+  ]
+}
