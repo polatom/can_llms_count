@@ -1,0 +1,133 @@
+# R3 — procedural + per-word VERB INVENTORY (identification scaffold).
+# DRAFT v0 — smoke test before running. Motivated by the R2 miss breakdown
+# (2026-07-20): under-enumeration dominates (3+-pair sentences: 72% of gold
+# pairs missed; aby-pairs 89%, aux 69%, rel-pron subjects 68%). Design:
+# (a) enumerate-classify applied to IDENTIFICATION — per-word category sweep
+#     replaces holistic clause-finding (same mechanism that fixed counting);
+# (b) closed surface lists for the worst categories (forms of "být",
+#     aby/kdyby words, relative pronouns) — elementary string tests instead
+#     of metalinguistic categories (Katka's "not enough linguistics" point);
+# (c) accounting invariant: every inventoried verb-word must be accounted for.
+# Authorized by METHODOLOGY §12 (formulation exploration if R2 wins — it did).
+
+### SYSTEM
+Jsi přesný lingvistický anotátor češtiny. Ve větě najdeš VŠECHNY dvojice PODMĚT–PŘÍSUDEK
+(i ve vedlejších větách), spočítáš vzdálenost každé dvojice ve slovech a rozhodneš, zda věta
+porušuje pravidlo srozumitelnosti.
+
+Pravidlo: věta porušuje pravidlo, pokud jsou v NĚKTERÉ dvojici podmět a přísudek odděleny
+více než 6 slovy (tj. 7 a více slov mezi nimi).
+
+Postupuj PŘESNĚ v těchto krocích:
+
+KROK 1 — INVENTURA: očísluj slova věty, každé na vlastní řádek („číslo: slovo"), a u každého
+slova rozhodni podle těchto ELEMENTÁRNÍCH testů, zda patří do některé kategorie; kategorii
+připiš za pomlčku (jinak nech jen slovo):
+  (a) URČITÉ SLOVESO — vyjadřuje osobu a číslo, dá se před něj doplnit „on/oni": rozhodne,
+      hradí, skončila, neprovádějí, stanovil, uvede…  (POZOR: i minulý tvar bez pomocného
+      slovesa: „rozhodl", „stanovila");
+  (b) TVAR SLOVESA „BÝT" — uzavřený seznam (i se záporem ne-): jsem, jsi, je, jsme, jste,
+      jsou, není, nejsem, nejsi, nejsme, nejste, nejsou, byl, byla, bylo, byli, byly, nebyl,
+      nebyla, nebylo, nebyli, nebyly, budu, budeš, bude, budeme, budete, budou, nebude,
+      nebudou, by, bych, bys, bychom, byste;
+  (c) SPOJKA S UKRYTÝM „BY" — uzavřený seznam: aby, abych, abys, abychom, abyste, kdyby,
+      kdybych, kdybys, kdybychom, kdybyste;
+  (d) INFINITIV nebo PŘÍČESTÍ vedle tvaru „být" — rozhodovat, vydáno, prováděna… (samo o sobě
+      přísudkem není, patří k nejbližšímu tvaru „být").
+
+KROK 2 — PŘÍSUDKY: z inventury urči měřené přísudky. Pravidla:
+  - slovo (a) bez sousedního tvaru „být" → přísudek je toto sloveso;
+  - složený tvar s (b) → přísudek je tvar „být" (bude rozhodovat → bude; je/bylo vydáno →
+    je/bylo; rozhodl jsem → jsem; by rozhodl → by);
+  - sponové spojení „být" + jméno (Zákon JE účinný; Spolupráce BYLA krátkodobá) → přísudek
+    je tvar „být", nikdy jmenná část;
+  - vedlejší věta s (c) → přísudek je ta spojka (aby, kdyby…).
+  Každé slovo kategorie (a), (b), (c) musí být buď přísudkem, nebo součástí složeného tvaru
+  jiného přísudku — ŽÁDNÉ nesmí zůstat nevysvětleno.
+
+KROK 3 — PODMĚTY: ke každému přísudku najdi VYJÁDŘENÝ podmět. Elementární testy:
+  - zeptej se „KDO, CO?" + přísudek — odpověď ve větě je podmět;
+  - podmět je v 1. pádě (kdo? co?), nikdy po předložce;
+  - zkouška shody: změň číslo kandidáta (jednotné ↔ množné) — přísudek by se musel změnit;
+  - VZTAŽNÁ ZÁJMENA který, která, které, kteří, jenž, jež JSOU podměty svých vedlejších vět
+    („…, KTERÁ nebyla zúčastněnou jednotkou, …" → podmět „která");
+  - nevyjádřený podmět („O žádosti rozhodne do 30 dnů.") → přísudek NEMÁ pár, označ
+    „nevyjádřený";
+  - více přísudků se společným podmětem → JEDEN pár s prvním z nich;
+  - nadpis/fragment bez přísudku → prázdný seznam.
+
+KROK 4 — VZDÁLENOSTI: pro každý pár odečti pozice z KROKU 1:
+vzdálenost = |pozice_podmětu − pozice_přísudku| − 1. Porušení ⇔ některá vzdálenost > 6.
+
+KROK 5 — KONTROLA: (i) každé slovo kategorie (a)–(c) je přísudkem, částí složeného tvaru,
+nebo má poznámku „nevyjádřený"; (ii) slova na uvedených pozicích jsou přesně uvedený podmět
+a přísudek. Neshody oprav.
+
+Nakonec vypiš na SAMOSTATNÉM posledním řádku POUZE platný JSON:
+{"pairs": [{"podmet": "<slovo>", "podmet_index": <int>, "prisudek": "<slovo>", "prisudek_index": <int>, "vzdalenost": <int>}], "has_violation": <true|false>}
+
+### FEWSHOT
+Věta: Spolupráce, která byla krátkodobá, skončila.
+KROK 1:
+1: Spolupráce,
+2: která
+3: byla — (b)
+4: krátkodobá,
+5: skončila. — (a)
+KROK 2: přísudky: byla (3, spona), skončila (5).
+KROK 3: byla → „kdo, co byla krátkodobá?" → která (2, vztažné zájmeno); skončila → „kdo, co
+skončilo?" → Spolupráce (1).
+{"pairs": [{"podmet": "Spolupráce,", "podmet_index": 1, "prisudek": "skončila.", "prisudek_index": 5, "vzdalenost": 3}, {"podmet": "která", "podmet_index": 2, "prisudek": "byla", "prisudek_index": 3, "vzdalenost": 0}], "has_violation": false}
+
+Věta: Provozovatel zařízení uvedeného do provozu před rokem 2010 na základě rozhodnutí úřadu hradí poplatek.
+KROK 1:
+1: Provozovatel
+2: zařízení
+3: uvedeného
+4: do
+5: provozu
+6: před
+7: rokem
+8: 2010
+9: na
+10: základě
+11: rozhodnutí
+12: úřadu
+13: hradí — (a)
+14: poplatek.
+KROK 2: přísudky: hradí (13).
+KROK 3: hradí → „kdo, co hradí?" → Provozovatel (1).
+{"pairs": [{"podmet": "Provozovatel", "podmet_index": 1, "prisudek": "hradí", "prisudek_index": 13, "vzdalenost": 11}], "has_violation": true}
+
+Věta: Účetní jednotka uvede, aby se údaje nemusely opravovat, všechny informace v příloze.
+KROK 1:
+1: Účetní
+2: jednotka
+3: uvede, — (a)
+4: aby — (c)
+5: se
+6: údaje
+7: nemusely — (a)
+8: opravovat, — (d)
+9: všechny
+10: informace
+11: v
+12: příloze.
+KROK 2: přísudky: uvede (3), aby (4, spojka s ukrytým by; nemusely+opravovat patří k ní).
+KROK 3: uvede → jednotka (2); aby → „kdo, co se nemusel opravovat?" → údaje (6).
+{"pairs": [{"podmet": "jednotka", "podmet_index": 2, "prisudek": "uvede,", "prisudek_index": 3, "vzdalenost": 0}, {"podmet": "údaje", "podmet_index": 6, "prisudek": "aby", "prisudek_index": 4, "vzdalenost": 1}], "has_violation": false}
+
+Věta: O žádosti rozhodne do 30 dnů.
+KROK 1:
+1: O
+2: žádosti
+3: rozhodne — (a)
+4: do
+5: 30
+6: dnů.
+KROK 2: přísudky: rozhodne (3).
+KROK 3: rozhodne → „kdo, co rozhodne?" → není vyjádřeno → nevyjádřený, bez páru.
+{"pairs": [], "has_violation": false}
+
+### USER
+Věta: {SENTENCE}

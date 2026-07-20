@@ -56,32 +56,37 @@ def build_messages(template_path: str, sentence: str) -> tuple[list[dict], str]:
 
 
 def _json_candidates(text: str):
-    """Yield top-level balanced {...} substrings, left to right."""
-    depth = 0
-    start = None
-    in_str = False
-    esc = False
-    for i, ch in enumerate(text):
-        if in_str:
-            if esc:
-                esc = False
-            elif ch == "\\":
-                esc = True
-            elif ch == '"':
-                in_str = False
-            continue
-        if ch == '"':
-            in_str = True
-        elif ch == "{":
-            if depth == 0:
-                start = i
-            depth += 1
-        elif ch == "}":
-            if depth > 0:
+    """Yield balanced {...} substrings, restarting parse state at each '{'.
+
+    A global left-to-right scan breaks when the surrounding PROSE contains an
+    odd number of ASCII double-quotes (e.g. the model echoing „kdo, co?" test
+    questions): the string state flips and real JSON braces become invisible.
+    Scanning from each '{' with fresh state is immune to prose quoting; invalid
+    spans are filtered by json.loads in the caller.
+    """
+    for start in (i for i, c in enumerate(text) if c == "{"):
+        depth = 0
+        in_str = False
+        esc = False
+        for j in range(start, len(text)):
+            ch = text[j]
+            if in_str:
+                if esc:
+                    esc = False
+                elif ch == "\\":
+                    esc = True
+                elif ch == '"':
+                    in_str = False
+                continue
+            if ch == '"':
+                in_str = True
+            elif ch == "{":
+                depth += 1
+            elif ch == "}":
                 depth -= 1
-                if depth == 0 and start is not None:
-                    yield text[start:i + 1]
-                    start = None
+                if depth == 0:
+                    yield text[start:j + 1]
+                    break
 
 
 def parse_completion(text: str | None) -> dict:

@@ -97,10 +97,14 @@ def main() -> None:
     ap.add_argument("--models", default=None)
     ap.add_argument("--formulations", default=None)
     ap.add_argument("--runs", type=int, default=None)
+    ap.add_argument("--workers", type=int, default=None,
+                    help="override config workers (e.g. lower after 429s)")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
     cfg = json.load(open(args.config, encoding="utf-8"))
+    if args.workers:
+        cfg["workers"] = args.workers
     recs = [json.loads(l) for l in open(args.eval, encoding="utf-8")]
     if args.limit:
         recs = recs[: args.limit]

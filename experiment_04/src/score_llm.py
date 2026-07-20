@@ -29,6 +29,7 @@ from collections import Counter, defaultdict
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from extract_pairs import T_LIMIT  # noqa: E402
+from llm_io import parse_completion  # noqa: E402  (authoritative re-parse)
 
 BASE = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 _PUNCT = ".,;:!?„“”\"'()[]«»—–-"
@@ -135,6 +136,9 @@ def main() -> None:
                 continue
             if "parsed" not in t:
                 continue
+            # authoritative re-parse from stored text (parser may have been fixed
+            # after the trace was written)
+            t["parsed"] = parse_completion(t.get("completion_text"))
             cells[(t["model_id"], t["formulation"], t["run_index"])][t["uid"]] = t
 
     rows = []

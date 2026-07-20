@@ -43,7 +43,9 @@
   ],
   "formulations": {
     "r1": "r1_naive.txt",
-    "r2": "r2_procedural.txt"
+    "r2": "r2_procedural.txt",
+    "r3": "r3_procedural_inventory.txt"
   },
+  "_r3_note": "added 2026-07-20 per METHODOLOGY sec.12 escape hatch (R2 beat R1): identification scaffold — per-word verb inventory, closed byt/aby lists, accounting invariant. Smoke: 20/20 parse-ok (after llm_io scanner fix).",
   "_formulations_note": "r0_production_verbatim.txt = optional reference arm, add to the map to run"
 }
