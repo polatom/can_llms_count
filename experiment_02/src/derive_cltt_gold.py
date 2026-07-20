@@ -85,11 +85,12 @@ def main() -> None:
                 for p in ext.pairs:
                     kind = classify_pair(p)
                     kinds[kind] += 1
-                    # short, clean examples only
-                    if 4 <= nw <= 22 and not p.anomalies:
-                        examples.setdefault(kind, [])
-                        if len(examples[kind]) < 3:
-                            examples[kind].append((text, p, uid))
+                    # candidate example: anomaly-free; the 3 shortest per kind
+                    # are picked at the end (rare constructions have no short
+                    # sentence in CLTT — a long genuine CLTT example beats an
+                    # invented one, the human-tree guarantee is the point)
+                    if nw >= 4 and not p.anomalies:
+                        examples.setdefault(kind, []).append((nw, text, p, uid))
                 if ext.nonverbal_nsubj_excluded and nw <= 20 and len(verbless_examples) < 4:
                     verbless_examples.append((text, uid))
 
@@ -115,7 +116,13 @@ def main() -> None:
     ]:
         w(f"## {kind}  ({kinds.get(kind, 0)} pairs in CLTT)")
         w("")
-        for text, p, uid in examples.get(kind, []):
+        picked = sorted(examples.get(kind, []), key=lambda e: e[0])[:3]
+        # avoid three near-identical sentences: drop same-text duplicates
+        seen_texts: set[str] = set()
+        for _nw, text, p, uid in picked:
+            if text in seen_texts:
+                continue
+            seen_texts.add(text)
             w(f"- `{uid}`")
             w(f"  - {numbered_words(text)}")
             w(f"  - pair: **{p.subj_form}** (word {p.subj_word_idx}) ↔ "
@@ -124,8 +131,8 @@ def main() -> None:
               f"→ distance **{p.distance}**")
             w("  - [ ] ✓ / correction: ")
             w("")
-        if not examples.get(kind):
-            w("*(no clean short example found in CLTT — will supply one from KUK)*")
+        if not picked:
+            w("*(construction not attested in CLTT — example will be supplied from KUK)*")
             w("")
     w("## Open category — verbless clauses (new question, K7)")
     w("")

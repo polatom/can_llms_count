@@ -49,7 +49,6 @@ klauze s vyjádřeným podmětem") je zahrnujeme; vzdálenosti jsou tam typicky 
   (0, 1 i více párů na větu; u koordinace navíc příznak dalších sloves — viz K6).
 - **50 vět nezávisle anotuje i Tomáš** (měření shody; tvoje verze je rozhodující).
 - Před začátkem dostaneš `ANNOTATION_GUIDELINES.md` (vznikne z tvých odpovědí na 1–4).
-- Otázka: **stihneš to do ~2 týdnů?** Případně navrhni rozsah, který je realistický.
 
 ## 6. Potvrzení prahu (drobnost)
 
