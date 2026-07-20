@@ -50,9 +50,11 @@ class Pair:
     distance: int  # words strictly between, §3.4
     pred_is_cop: bool
     pred_is_aux: bool
+    pred_verbform: str  # "Fin" | "Part" | "other" (of the measured predicate token)
     pred_mood_cnd: bool
     pred_in_mwt: bool  # measured predicate absorbed in a multiword token (aby/kdyby)
     subj_is_pass: bool  # nsubj:pass
+    subj_is_rel: bool  # relative-pronoun subject (PronType=Rel), see K8
     vs_order: bool  # predicate word precedes subject word
     anomalies: list[str] = field(default_factory=list)
 
@@ -83,33 +85,46 @@ def _base(deprel: str) -> str:
     return deprel.split(":")[0]
 
 
-def _finite_element(head: Token, kids: list[Token]) -> tuple[Token, bool, list[str]]:
+def _measured_predicate(head: Token, kids: list[Token]) -> tuple[Token, bool, list[str]]:
     """The measured predicate token for a clause head (§3.1 mechanical rule).
+
+    The agreement-bearing element of the predicate complex: a FINITE aux/cop
+    child if present (conditional preferred among several); else a PARTICIPIAL
+    aux/cop child (the l-participle of "být" in past passive "byla provedena"
+    and past copular "byla krátkodobá" — carries gender/number agreement);
+    else the clause head itself (finite verb or bare l-participle).
 
     Returns (token, head_is_fallback, anomalies).
     """
-    fins = [
-        c for c in kids
-        if _base(c.deprel) in ("aux", "cop") and _FIN in c.feats
-    ]
-    if not fins:
-        return head, True, []
-    if len(fins) == 1:
-        return fins[0], False, []
-    # Anomalous: >1 finite aux/cop. Prefer the conditional; log it.
-    anomaly = [f"multiple_finite_aux:{'+'.join(c.form for c in fins)}"]
-    cnd = [c for c in fins if _CND in c.feats]
-    pick = cnd[0] if cnd else min(fins, key=lambda c: c.id)
-    return pick, False, anomaly
+    auxcop = [c for c in kids if _base(c.deprel) in ("aux", "cop")]
+    fins = [c for c in auxcop if _FIN in c.feats]
+    parts = [c for c in auxcop if _PART in c.feats]
+
+    def pick_from(cands: list[Token], label: str) -> tuple[Token, bool, list[str]]:
+        if len(cands) == 1:
+            return cands[0], False, []
+        anomaly = [f"multiple_{label}:{'+'.join(c.form for c in cands)}"]
+        cnd = [c for c in cands if _CND in c.feats]
+        return (cnd[0] if cnd else min(cands, key=lambda c: c.id)), False, anomaly
+
+    if fins:
+        return pick_from(fins, "finite_aux")
+    if parts:
+        return pick_from(parts, "participial_aux")
+    return head, True, []
 
 
 def _is_finite_complex(head: Token, kids: list[Token]) -> bool:
     """Is this head a finite predicate complex (§3: 'finite clause')?
 
-    True if it has a finite aux/cop child, or is itself a finite verb or a bare
+    True if it has a finite OR participial aux/cop child (past forms of "být"
+    are l-participles, VerbForm=Part), or is itself a finite verb or a bare
     l-participle (3rd-person past). Converbs and bare infinitives are not.
     """
-    if any(_base(c.deprel) in ("aux", "cop") and _FIN in c.feats for c in kids):
+    if any(
+        _base(c.deprel) in ("aux", "cop") and (_FIN in c.feats or _PART in c.feats)
+        for c in kids
+    ):
         return True
     if head.upos == "VERB" and (_FIN in head.feats or _PART in head.feats) and _CONV not in head.feats:
         return True
@@ -158,17 +173,18 @@ def extract(sentence: Sentence) -> SentenceExtraction:
             anomalies.append(f"nsubj_head_missing:{t.id}")
             continue
         hkids = kids.get(head.id, [])
-        has_fin_child = any(
-            _base(c.deprel) in ("aux", "cop") and _FIN in c.feats for c in hkids
+        has_auxcop = any(
+            _base(c.deprel) in ("aux", "cop") and (_FIN in c.feats or _PART in c.feats)
+            for c in hkids
         )
         head_verbal = head.upos == "VERB" and _CONV not in head.feats
-        if not has_fin_child and not head_verbal:
-            # nominal/adjectival head without copula -> verbless clause, no pair (§3.3 note)
+        if not has_auxcop and not head_verbal:
+            # nominal/adjectival head, NO aux/cop at all -> verbless clause (§3.3, K7)
             nonverbal_excluded += 1
             nonverbal_upos.append(head.upos)
             continue
 
-        pred, is_fallback, an = _finite_element(head, hkids)
+        pred, is_fallback, an = _measured_predicate(head, hkids)
         p_anoms = list(an)
 
         sw = token_word.get(t.id)
@@ -197,9 +213,12 @@ def extract(sentence: Sentence) -> SentenceExtraction:
                 distance=d,
                 pred_is_cop=(not is_fallback) and _base(pred.deprel) == "cop",
                 pred_is_aux=(not is_fallback) and _base(pred.deprel) == "aux",
+                pred_verbform=("Fin" if _FIN in pred.feats else
+                               "Part" if _PART in pred.feats else "other"),
                 pred_mood_cnd=_CND in pred.feats,
                 pred_in_mwt=pred.id in in_mwt,
                 subj_is_pass=t.deprel.startswith("nsubj:pass"),
+                subj_is_rel="PronType=Rel" in t.feats,
                 vs_order=pw < sw,
                 anomalies=p_anoms,
             )
@@ -264,9 +283,11 @@ def extraction_to_dict(uid: str, subcorpus: str, ext: SentenceExtraction) -> dic
                 "distance": p.distance,
                 "pred_is_cop": p.pred_is_cop,
                 "pred_is_aux": p.pred_is_aux,
+                "pred_verbform": p.pred_verbform,
                 "pred_mood_cnd": p.pred_mood_cnd,
                 "pred_in_mwt": p.pred_in_mwt,
                 "subj_is_pass": p.subj_is_pass,
+                "subj_is_rel": p.subj_is_rel,
                 "vs_order": p.vs_order,
                 "anomalies": p.anomalies,
             }

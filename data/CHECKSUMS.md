@@ -1,6 +1,8 @@
 # Data provenance & checksums
 
-Raw corpora are gitignored (`data/raw/`). This manifest lets "downloaded & verified" be reproducible.
+Raw corpora live at the repo root in `data/raw/` (gitignored) and are shared by all experiments;
+`experiment_01/data/raw` is a committed symlink here (moved 2026-07-20, originally downloaded for
+experiment_01). This manifest lets "downloaded & verified" be reproducible.
 
 | File | SHA256 | Bytes | LINDAT handle |
 |---|---|---|---|

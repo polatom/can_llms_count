@@ -6,7 +6,7 @@ construction type. All examples below come from human-annotated `cs_cltt` trees,
 error is in OUR rule, not in a parser. For each: numbered words, the extracted pair,
 the distance (words strictly between). **Please mark each ✓ or correct it.**
 
-Derivation over the whole treebank: 1121 sentences → 1550 pairs. Distribution: finite verb / l-participle: 1147, copular (copula): 350, passive (finite aux): 33, conditional (by): 9, aby/kdyby (absorbed by): 9, analytic (finite aux): 2
+Derivation over the whole treebank: 1121 sentences → 1586 pairs. Distribution: finite verb / l-participle: 1147, copular — finite copula (je): 350, passive — finite aux (je/bude vydána): 33, passive — past aux (byla vydána): 31, conditional (by): 9, aby/kdyby (absorbed by): 9, analytic — aux (jsem/bude …): 4, copular — past copula (byla): 3
 
 ## finite verb / l-participle  (1147 pairs in CLTT)
 
@@ -25,7 +25,7 @@ Derivation over the whole treebank: 1121 sentences → 1550 pairs. Distribution:
   - pair: **Ložisko** (word 1) ↔ **odpisuje** (word 7) → distance **5**
   - [ ] ✓ / correction: 
 
-## copular (copula)  (350 pairs in CLTT)
+## copular — finite copula (je)  (350 pairs in CLTT)
 
 - `cs_cltt/cs_cltt-ud-dev.conllu::12`
   - 1:(6) 2:Dlouhodobý 3:nehmotný 4:a 5:hmotný 6:majetek, 7:který 8:je 9:majetkem 10:bytových 11:družstev, 12:pokud 13:neslouží 14:k 15:podnikání, 16:se 17:nemusí 18:odpisovat.
@@ -42,6 +42,10 @@ Derivation over the whole treebank: 1121 sentences → 1550 pairs. Distribution:
   - pair: **Výpočet** (word 2) ↔ **je** (word 5) → distance **2**
   - [ ] ✓ / correction: 
 
+## copular — past copula (byla)  (3 pairs in CLTT)
+
+*(no clean short example found in CLTT — will supply one from KUK)*
+
 ## conditional (by)  (9 pairs in CLTT)
 
 *(no clean short example found in CLTT — will supply one from KUK)*
@@ -53,7 +57,7 @@ Derivation over the whole treebank: 1121 sentences → 1550 pairs. Distribution:
   - pair: **závěrka** (word 11) ↔ **aby** (word 8, measured token: by) → distance **2**
   - [ ] ✓ / correction: 
 
-## passive (finite aux)  (33 pairs in CLTT)
+## passive — finite aux (je/bude vydána)  (33 pairs in CLTT)
 
 - `cs_cltt/cs_cltt-ud-dev.conllu::250`
   - 1:Zobrazení 2:je 3:poctivé, 4:když 5:jsou 6:při 7:něm 8:použity 9:účetní 10:metody 11:způsobem, 12:který 13:vede 14:k 15:dosažení 16:věrnosti.
@@ -70,7 +74,24 @@ Derivation over the whole treebank: 1121 sentences → 1550 pairs. Distribution:
   - pair: **podpis** (word 21) ↔ **je** (word 18) → distance **2**
   - [ ] ✓ / correction: 
 
-## analytic (finite aux)  (2 pairs in CLTT)
+## passive — past aux (byla vydána)  (31 pairs in CLTT)
+
+- `cs_cltt/cs_cltt-ud-dev.conllu::115`
+  - 1:Vyloučením 2:se 3:rozumí 4:takové 5:operace, 6:které 7:umožní, 8:aby 9:konsolidovaná 10:účetní 11:závěrka 12:neobsahovala 13:vzájemné 14:transakce, 15:které 16:byly 17:realizovány 18:účetními 19:jednotkami 20:v 21:konsolidaci.
+  - pair: **které** (word 15) ↔ **byly** (word 16) → distance **0**
+  - [ ] ✓ / correction: 
+
+- `cs_cltt/cs_cltt-ud-test.conllu::314`
+  - 1:Obdobně 2:se 3:postupuje, 4:pokud 5:účetní 6:závěrka 7:nebo 8:konsolidovaná 9:účetní 10:závěrka 11:nebyla 12:za 13:dané 14:účetní 15:období 16:sestavena.
+  - pair: **závěrka** (word 6) ↔ **nebyla** (word 11) → distance **4**
+  - [ ] ✓ / correction: 
+
+- `cs_cltt/cs_cltt-ud-train.conllu::202`
+  - 1:(2) 2:Položka 3:„C.I.1. 4:Výdaje 5:příštích 6:období“ 7:obsahuje 8:náklady, 9:které 10:souvisejí 11:s 12:běžným 13:účetním 14:obdobím, 15:avšak 16:výdaj 17:na 18:ně 19:nebyl 20:dosud 21:uskutečněn.
+  - pair: **výdaj** (word 16) ↔ **nebyl** (word 19) → distance **2**
+  - [ ] ✓ / correction: 
+
+## analytic — aux (jsem/bude …)  (4 pairs in CLTT)
 
 - `cs_cltt/cs_cltt-ud-test.conllu::166`
   - 1:(4) 2:Účetní 3:jednotky, 4:které 5:nejsou 6:založeny 7:nebo 8:zřízeny 9:za 10:účelem 11:podnikání, 12:uplatňují 13:ustanovení 14:odstavců 15:1 16:až 17:3 18:v 19:souladu 20:s 21:účetními 22:metodami.

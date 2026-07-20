@@ -88,17 +88,25 @@ verbo-nominal predicates, to the finite (light) verb.
 | analytic future | *Soud **bude** rozhodovat* | the finite AUX (*bude*) |
 | conditional | *Soud **by** rozhodl* | the conditional AUX (*by*) |
 | past conditional (two aux) | *Byl **bys** šel do kina?* | the conditional AUX (*bys*) — **not** necessarily leftmost (K1) |
-| passive | *Rozhodnutí **bylo** vydáno* | the finite AUX (*bylo*) |
-| copular | *Petr **je** prezident* | the copula (*je*) |
+| passive, present/future | *Rozhodnutí **je/bude** vydáno* | the finite AUX (*je/bude*) |
+| passive, past | *Rozhodnutí **bylo** vydáno* | the AUX (*bylo* — in UD an l-participle, `VerbForm=Part`) |
+| copular, present | *Petr **je** prezident* | the copula (*je*) |
+| copular, past | *Spolupráce **byla** krátkodobá* | the copula (*byla* — l-participle in UD) |
 | aby/kdyby clause (absorbed *by*) | *…, **aby** se Petr nemusel zouvat* | the conjunction word (*aby*) — it absorbs the conditional AUX and carries person agreement (*abych/abys/…*) |
 
-**Mechanical rule: the measured predicate is the finite element of the predicate complex** — the
-`aux`/`aux:pass`/`cop` child with `VerbForm=Fin` if the clause head has one, otherwise the clause
-head itself (then a finite verb or bare l-participle). No positional heuristic: in
-past-conditional forms only *by/bys* is finite (`byl` is `VerbForm=Part`), so the rule selects it
-wherever it stands, including in questions. Rare double-aux forms without a conditional
-(pluperfect *byl jsem přišel*, passive conditional *byl by vydán*) still contain exactly one
-finite AUX; the extraction code asserts uniqueness and logs violations.
+**Mechanical rule: the measured predicate is the agreement-bearing element of the predicate
+complex**, selected with this priority among the head's `aux`/`aux:pass`/`cop` children:
+1. a **finite** aux/cop (`VerbForm=Fin`; the conditional preferred if several) — *je, jsem, bude,
+   by/bys*;
+2. else a **participial** aux/cop (`VerbForm=Part`) — the l-participle of *být* in past passives
+   (*byla provedena*) and past copular clauses (*byla krátkodobá*), which carries gender/number
+   agreement. (UD detail that matters: past forms of *být* are **not** `VerbForm=Fin`, so a
+   Fin-only rule silently misses these very frequent legal constructions — caught and fixed
+   2026-07-20 via the audit's K7 category);
+3. else the clause head itself (finite verb or bare l-participle, *rozhodl*).
+No positional heuristic: in past-conditional forms only *by/bys* is finite (*byl* is Part), so
+rule 1 selects it wherever it stands, including in questions. The extraction code asserts there
+is at most one candidate per priority level and logs violations (none in eval-640 or CLTT).
 
 **aby/kdyby falls out for free:** in UD these conjunctions are multiword tokens — surface *aby* =
 `aby` (SCONJ, `mark`) + `by` (AUX, `Mood=Cnd|VerbForm=Fin`, `aux` of the clause head); verified in
@@ -124,6 +132,14 @@ phrase; coordinated subjects → the first conjunct, i.e. the UD head — confir
 - **Clausal subjects** (`csubj`): excluded from pairs (no single word position to measure from —
   confirmed, K4); counted and reported.
 - **Fragments / verbless headings:** gold = empty set; correctly returning "no pairs" is scored.
+- **Verbless clauses with an overt subject** (subject attached to a non-verbal head with no
+  aux/cop at all — elliptical constructions, *"Vstup zakázán"*-type): excluded from pairs and
+  logged. After the participial-aux fix these are genuinely rare (2 of 719 subject edges in
+  eval-640). **Open — K7:** exclude (current) vs. measure to the non-verbal head; Katka to rule.
+- **Relative clauses** produce pairs with a relative-pronoun subject (*…, **které** by bylo
+  vydáno*): currently **included** (they are finite clauses with an overt nominal subject; their
+  distances are typically short). **Open — K8:** confirm inclusion; flag `PronType=Rel` kept in
+  the data so they can be reported separately either way.
 - **Shared-subject predicate coordination** (*Ministr návrh podepsal a odeslal* — one overt
   subject, two finite verbs): **one pair — distance to the first verb** (the mechanical UD
   default; only the first conjunct bears `nsubj`). *Provisional (K6): decided 2026-07-17 in
@@ -170,16 +186,27 @@ UD-interpretation layer exactly as it pays for parse errors.
 
 ## 4. Data
 
-**Source:** KUK 1.0 (four sub-corpora, UDPipe-parsed silver) + CLTT 2.0 / `cs_cltt` (human gold
-trees). Fresh sample; nothing reused from exp_01.
+**Source:** KUK 1.0 (UDPipe-parsed silver; raw corpora live at the repo root `data/raw/`, shared
+by all experiments) + CLTT 2.0 / `cs_cltt` (human gold trees). Fresh sample; nothing reused from
+exp_01.
+
+**Population = the ESO sub-corpus only** (decision 2026-07-20). KUK 1.0 composition (per its
+README): ESO = statements of the Public Defender of Rights (*Evidence stanovisek ombudsmana*,
+844k of 910k sentences), FrBo = Frank Bold Society public materials, OmbuFlyers = ombudsman
+information flyers, KUKY = mixed collected texts; Czech court decisions exist in KUK only as
+metadata for the external CzCDC corpus. Under uniform sampling ESO is ~95% of any sample anyway
+and the small sub-corpora would land n < 15 (uninterpretable breakdowns); restricting to ESO
+makes the population single-source and honestly describable ("ombudsman statements" — squarely
+the PONK use case). The other sub-corpora remain available for a later out-of-domain check.
 
 ### 4.1 Main eval set — random, unfiltered (N = 640, with an audit gate)
 
-**Uniform random sample of sentences** from unfiltered KUK. No linguistic filtering and no
-stratification (decision 2026-07-17: representativeness must be self-justifying; the verdict
-metric needs realistic prevalence). Only technical exclusions, logged with counts:
-exact-duplicate sentences after whitespace normalization (legal boilerplate), sentences > 200
-words (context sanity; expected rare). Multi-clause monsters, fragments, headings all stay in.
+**Uniform random sample of sentences** from the unfiltered ESO population. No linguistic
+filtering and no stratification (decision 2026-07-17: representativeness must be self-justifying;
+the verdict metric needs realistic prevalence). Only technical exclusions, logged with counts:
+exact-duplicate sentences after whitespace normalization (legal boilerplate: 122k within ESO),
+sentences > 200 words (context sanity; rare). Multi-clause monsters, fragments, headings all
+stay in.
 
 **Audit gate (before any LLM run):** report per-phenomenon counts on the sample (clause counts,
 copular, pro-drop, non-SVO candidates, fragments, near-threshold distances per silver) **and the
@@ -191,13 +218,14 @@ are known. Sub-corpus, length, clause count etc. kept as metadata for post-hoc b
 
 ### 4.2 Human gold (primary standard)
 
-- **KUK-200 (new annotation):** 140 sentences sampled at random from the 640 (gold ⊂ eval set →
-  parser-arm accuracy measured directly on eval items) + 60 **targeted** at rare phenomena
-  (copular, pro-drop-heavy multi-clause, non-SVO, syncretic nominatives, fragments, aby-clauses).
-  The targeted 60 are quarantined: per-phenomenon diagnosis only, never pooled into headline
-  metrics. Annotation on pre-numbered word sheets under §3 (`ANNOTATION_GUIDELINES.md`, to
-  draft); annotator: Katka.
-- **IAA:** 50 of the 200 double-annotated. Second annotator: **Tomáš** (O3). A non-linguist
+- **Gold-260 (new annotation):** **200** sentences sampled at random from the 640 (gold ⊂ eval
+  set → parser-arm accuracy measured directly on eval items; enlarged from 140 on 2026-07-20
+  after the audit gate measured ~10% verdict prevalence → ≈20 expected positives) + 60
+  **targeted** at rare phenomena (copular, pro-drop-heavy multi-clause, non-SVO, syncretic
+  nominatives, fragments, aby-clauses). The targeted 60 are quarantined: per-phenomenon diagnosis
+  only, never pooled into headline metrics. Annotation on pre-numbered word sheets under §3
+  (`ANNOTATION_GUIDELINES.md`, to draft); annotator: Katka.
+- **IAA:** 50 of the 260 double-annotated. Second annotator: **Tomáš** (O3). A non-linguist
   second annotator is acceptable and even informative here: with a signed-off definition and
   written guidelines, linguist × trained-non-linguist agreement measures exactly what SPRINT
   needs — whether the rule's definition is executable by a careful reader, not only by its
@@ -302,9 +330,9 @@ perfect-consistency claims are checked against the cache-hit/latency logs.
 
 ## 7. Metrics and analysis
 
-**Primary — verdict quality vs. gold-200 (random 140) at T = 6 (violation ⇔ d > 6):** accuracy,
-precision, recall, F1 of `has_violation`. This is what a deployed SPRINT rule delivers. The
-parser arm is scored identically.
+**Primary — verdict quality vs. the random gold slice (200 items) at T = 6 (violation ⇔ d > 6):**
+accuracy, precision, recall, F1 of `has_violation`. This is what a deployed SPRINT rule delivers.
+The parser arm is scored identically.
 
 **Secondary — measurement quality on the same items:**
 - pair identification P/R/F1, matched by **word form** of both endpoints (greedy, ties by index
@@ -329,11 +357,12 @@ a small inset (or second panel) with the H4 decomposition (identification vs. co
 residual error) so the mechanism claim needs no extra figure. McNemar on paired verdicts for the
 key comparisons (R2 vs. R1 per model; best-LLM vs. parser baseline).
 
-**Statistical power (stated up front, checked at the audit gate):** with n = 140 paired verdicts,
-McNemar detects differences of roughly ~8–10 pts at α = 0.05 with reasonable power; ~5 pt
+**Statistical power (stated up front, checked at the audit gate):** with n = 200 paired verdicts,
+McNemar detects differences of roughly ~7–9 pts at α = 0.05 with reasonable power; ~5 pt
 differences will not be resolvable on gold — the paper reports CIs and avoids overclaiming close
-calls. Precision/recall CIs additionally depend on violation prevalence (§4.1 audit gate); if
-prevalence is low, the random gold slice is enlarged, not stratified.
+calls. Precision/recall CIs additionally depend on violation prevalence (§4.1 audit gate:
+measured ~10% → ≈20 positives in the random slice); if prevalence had been lower, the remedy is
+enlarging the random slice, never stratifying.
 
 **Qualitative error pass:** 20–30 residual errors of the best LLM configuration and of the parser
 arm, hand-categorized by phenomenon (feeds the paper's error-analysis section and exp_03's
@@ -345,7 +374,7 @@ inventory).
 2. Extraction code (parser arm) incl. §3.1 finite-element rule + assertions; run on eval-640 and
    on CLTT; worked examples for Katka (~20); freeze `ANNOTATION_GUIDELINES.md` (K6 encoded as
    provisional).
-3. Annotation sheets (pre-numbered words) → Katka: 140 random + 60 targeted; 50 double-annotated
+3. Annotation sheets (pre-numbered words) → Katka: 200 random + 60 targeted; 50 double-annotated
    (second annotator: Tomáš).
 4. R1 Czech adaptation + R2 written; frozen after a 20-sentence smoke test (format compliance
    only — no metric peeking); model roster + providers pinned and recorded.
@@ -359,8 +388,8 @@ inventory).
    verdict quality reaches the parser baseline — or the finding that none does, which settles
    the question in favor of the parser pipeline with unfiltered-text evidence.
 2. **The R2 rule template** in SPRINT `prompt_content` format, directly usable in the app.
-3. **Gold data:** KUK-200 human-annotated pairs under the signed-off §3 definition + IAA figures
-   + CLTT-derived gold pairs — the first human gold for this task.
+3. **Gold data:** gold-260 human-annotated pairs under the signed-off §3 definition + IAA figures
+   + CLTT-derived gold pairs (1,586) — the first human gold for this task.
 4. **The honest parser-baseline number** on *unfiltered* legal Czech — the quantified headroom
    that motivates (or kills) experiment_03.
 5. Full traces, costs, and code, as in exp_01.
@@ -382,8 +411,20 @@ inventory).
   verify at run time.
 - **O5:** flag the garbled `teaching_examples` in the C4DHI export back to KMH; confirm the rule
   is also deployed for Czech text (the export's testset is English — see §5.2 R1 note).
+- **K7 (Katka):** verbless clauses with overt subject (§3.3) — exclude vs. measure to head.
+- **K8 (Katka):** relative-pronoun subjects (§3.3) — confirm inclusion.
+- **K9 (Katka):** review `docs/WORKED_EXAMPLES_katka.md` (§3.1 rule on CLTT gold, incl. the
+  past-copular/past-passive rows added 2026-07-20) + confirm K6.
 
 **Resolved:**
+- **O6** (2026-07-20): population = **ESO sub-corpus only** (Tomáš; single-source rationale in
+  §4). Eval-640 resampled accordingly (same seed).
+- **O7** (2026-07-20): random gold slice enlarged 140 → **200** (audit gate: ~10% prevalence).
+- **O8** (2026-07-20): raw corpora moved to repo root `data/raw/` (shared across experiments;
+  `experiment_01/data/raw` is now a symlink; manifest at `data/CHECKSUMS.md`).
+- **Rule fix** (2026-07-20): measured-predicate rule extended with priority level 2 (participial
+  aux/cop) — a Fin-only rule missed past passives (*byla provedena*) and past copulars (*byla
+  krátkodobá*), ~8% of subject edges; surfaced by the audit's K7 category, verified on CLTT.
 - **O1** (2026-07-17): production rule obtained → `docs/sprint-rule-C4DHI_Predicate-Subject_Distance.json`.
   Review findings: (a) rule text and testset are **English** (EU directive sentences) → R1 =
   faithful Czech adaptation, §5.2; (b) threshold semantics "at least 7 words between" → §3.5

@@ -2,7 +2,8 @@
 *.zip
 # Overleaf project clone (separate git repo, synced via git.overleaf.com)
 /paper/
-experiment_01/data/raw/
+# raw corpora at repo root, shared by all experiments (experiment_01/data/raw is a committed symlink)
+/data/raw/
 # large regenerable intermediate (415k gold pairs, ~250MB); rebuild via src/extract_pairs.py
 experiment_01/data/processed/kuk_pairs.jsonl
 __pycache__/

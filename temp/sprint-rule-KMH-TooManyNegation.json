@@ -1,0 +1,57 @@
+{
+  "format": "sprint.rules.export",
+  "version": 3,
+  "exported_at": "2026-07-16T08:14:30.391020+00:00Z",
+  "exported_by": {
+    "user_id": 548,
+    "email": "kh@sprint.com"
+  },
+  "scope": "single",
+  "category_definitions": [],
+  "rules": [
+    {
+      "name": "KMH-TooManyNegation",
+      "document_section_application": "sentence",
+      "status": "published",
+      "prompt_content": {
+        "testset": [
+          {
+            "sentence": "Nikdo nic nemá mít za definitivní.",
+            "expected_violation": true
+          },
+          {
+            "sentence": "Svědek podle svého tvrzení nikdy nebyl v nepřístupných a neodemčených prostorách předmětné budovy.",
+            "expected_violation": true
+          },
+          {
+            "sentence": "Neznámého pachatele se nikdy nikým nepovedlo identifikovat.",
+            "expected_violation": true
+          },
+          {
+            "sentence": "Nezletilí nikde nejsou.",
+            "expected_violation": false
+          },
+          {
+            "sentence": "Žalovaný přiznává, že neví, kde se předmět nachází.",
+            "expected_violation": false
+          },
+          {
+            "sentence": "Nemovitost nevykazuje ani nejběžnější známky užívání. ",
+            "expected_violation": false
+          },
+          {
+            "sentence": "Svědek nemá nic, co by dodal. ",
+            "expected_violation": false
+          }
+        ],
+        "conditions": "(1) Negace vzniká předponou ne- připojenou k podstatným jménům, přídavným jménům, příslovcím a slovesům. Příklad: neštěstí, nešťastný, nesnadně, nedělat. (2) Za negaci se považují také slova: \"nikdo\", \"nic\", \"nikde\", nikdy\", \"nijak\", \"nijaký\", \"nikterak\", \"žádný\". (3) Věta obsahuje 3 a více slov, která jsou negace. (4) Za negaci nejsou považované ustálené právní termíny, například: \"nemovitost\", \"nezletilí\", \"nehoda\", \"nedbalost\", \"nevinný\", \"nezvěstný\". (5) Za negaci nejsou považované superlativy přídavných jmen nebo příslovcí, například \"nejvyšší\" (nejedná se o předponu ne-, ale o předponu nej-).",
+        "definition": "Detekuje věty, které obsahují 3 a více negací.",
+        "instructions": "Přepiš větu tak, aby obsahovala nanejvýš dvě negace.",
+        "teaching_examples": [
+          "Pachatel nepoškodil objekt nijak nevýznamně. \nSvědek uvedl, že žádné neznámé předměty nemá. -> Pachatel významně poškodil objekt.\nSvědek uvedl, že nemá neznámé předměty."
+        ]
+      },
+      "categories": []
+    }
+  ]
+}

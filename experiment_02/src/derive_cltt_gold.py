@@ -27,7 +27,7 @@ from extract_pairs import extract, extraction_to_dict  # noqa: E402
 
 DEFAULT_CLTT = os.path.normpath(os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
-    "..", "..", "experiment_01", "data", "raw", "cs_cltt"))
+    "..", "..", "data", "raw", "cs_cltt"))
 
 
 def classify_pair(p) -> str:
@@ -36,11 +36,13 @@ def classify_pair(p) -> str:
     if p.pred_mood_cnd:
         return "conditional (by)"
     if p.pred_is_cop:
-        return "copular (copula)"
+        return ("copular — past copula (byla)" if p.pred_verbform == "Part"
+                else "copular — finite copula (je)")
     if p.pred_is_aux and p.subj_is_pass:
-        return "passive (finite aux)"
+        return ("passive — past aux (byla vydána)" if p.pred_verbform == "Part"
+                else "passive — finite aux (je/bude vydána)")
     if p.pred_is_aux:
-        return "analytic (finite aux)"
+        return "analytic — aux (jsem/bude …)"
     # fallback = clause head itself
     return "finite verb / l-participle"
 
@@ -105,8 +107,11 @@ def main() -> None:
       f"Distribution: " + ", ".join(f"{k}: {v}" for k, v in kinds.most_common()))
     w("")
     for kind in [
-        "finite verb / l-participle", "copular (copula)", "conditional (by)",
-        "aby/kdyby (absorbed by)", "passive (finite aux)", "analytic (finite aux)",
+        "finite verb / l-participle",
+        "copular — finite copula (je)", "copular — past copula (byla)",
+        "conditional (by)", "aby/kdyby (absorbed by)",
+        "passive — finite aux (je/bude vydána)", "passive — past aux (byla vydána)",
+        "analytic — aux (jsem/bude …)",
     ]:
         w(f"## {kind}  ({kinds.get(kind, 0)} pairs in CLTT)")
         w("")
