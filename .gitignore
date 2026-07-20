@@ -19,3 +19,5 @@ venv/
 *.out
 *.log
 experiment_01/paper/build.log
+# scratch (never commit)
+/temp/
