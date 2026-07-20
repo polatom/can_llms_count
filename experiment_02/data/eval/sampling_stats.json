@@ -1,0 +1,19 @@
+{
+  "seed": 20260717,
+  "n": 640,
+  "max_words": 200,
+  "kuk_root": "/home/polto/ufal/can_llms_count/experiment_01/data/raw/KUK_1.0/KUK_1.0/data",
+  "stats": {
+    "total_sentences": 910373,
+    "excluded_duplicate": 141000,
+    "excluded_over_max_words": 223,
+    "excluded_empty": 135,
+    "population_after_exclusions": 769015
+  },
+  "per_subcorpus": {
+    "ESO": 844118,
+    "FrBo": 32378,
+    "KUKY": 21610,
+    "OmbuFlyers": 12267
+  }
+}
