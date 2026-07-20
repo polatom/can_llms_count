@@ -1,5 +1,11 @@
 # Experiment 02 — Methodology (v3.1)
 
+> **Status note (2026-07-20): superseded by `../experiment_04/` (CLTT-primary redesign — same
+> RQs/conditions/task, different data foundation; no new annotation). This design is kept frozen
+> as the fallback if the CLTT-derived gold fails validation. Do not send
+> `docs/QUESTIONS_katka_2026-07-20.md` from THIS directory — the current version lives in
+> experiment_04.**
+
 Status: **v3.1 — converged design; §3 task definition reviewed and signed off by Katka
 (2026-07-16, except K6 provisional per §3.3); open items in §11.** Self-contained; experiment_01
 is cited for motivation only, no artifacts reused. Prior drafts in git history: v1 `b165f70`,
