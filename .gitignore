@@ -21,3 +21,5 @@ venv/
 experiment_01/paper/build.log
 # scratch (never commit)
 /temp/
+# grid traces: committed only after the run completes (decision pending on size/compression)
+experiment_04/results/runs/
