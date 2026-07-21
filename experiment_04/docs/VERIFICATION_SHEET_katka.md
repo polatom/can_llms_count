@@ -146,7 +146,7 @@ Složení: finite verb / l-participle: 58, copular — finite copula (je): 17, c
 
 **26.** `cs_cltt/cs_cltt-ud-dev.conllu::101`
 - (…) 6:být 7:zahrnuty 8:do 9:položek 10:konsolidované 11:účetní 12:závěrky, 13:je-li 14:podíl 15:konsolidující 16:účetní 17:jednotky 18:na 19:vlastním 20:kapitálu 21:účetní (…)
-- pár: **podíl** (slovo 14) ↔ **je** (slovo 13) → vzdálenost **0**
+- pár: **podíl** (slovo 14) ↔ **je-li** (slovo 13) → vzdálenost **0**
 - [ ] ✓ / oprava: 
 
 ## finite verb / l-participle
@@ -262,7 +262,7 @@ Složení: finite verb / l-participle: 58, copular — finite copula (je): 17, c
 
 **44.** `cs_cltt/cs_cltt-ud-dev.conllu::29`
 - 1:(5) 2:O 3:majetku 4:podle 5:odstavce 6:1 7:a 8:jeho 9:oprávkách 10:se 11:účtuje 12:jako 13:o 14:celku; 15:majetek 16:se 17:i 18:jako 19:celek 20:vykazuje.
-- pár: **majetek** (slovo 15) ↔ **vykazuje** (slovo 20) → vzdálenost **4**
+- pár: **majetek** (slovo 15) ↔ **vykazuje.** (slovo 20) → vzdálenost **4**
 - [ ] ✓ / oprava: 
 
 **45.** `cs_cltt/cs_cltt-ud-dev.conllu::311`
@@ -277,7 +277,7 @@ Složení: finite verb / l-participle: 58, copular — finite copula (je): 17, c
 
 **47.** `cs_cltt/cs_cltt-ud-dev.conllu::51`
 - 1:Ostatní 2:účetní 3:jednotky 4:stanoví, 5:zda 6:budou 7:účtovat 8:o 9:odložené 10:dani 11:a 12:vykazovat 13:ji.
-- pár: **jednotky** (slovo 3) ↔ **stanoví** (slovo 4) → vzdálenost **0**
+- pár: **jednotky** (slovo 3) ↔ **stanoví,** (slovo 4) → vzdálenost **0**
 - [ ] ✓ / oprava: 
 
 **48.** `cs_cltt/cs_cltt-ud-dev.conllu::6`
@@ -301,7 +301,7 @@ Složení: finite verb / l-participle: 58, copular — finite copula (je): 17, c
 
 **51.** `cs_cltt/cs_cltt-ud-test.conllu::132`
 - (…) 34:za 35:dílčí 36:konsolidační 37:celek 38:státu 39:účetní 40:jednotce, 41:která 42:tyto 43:účetní 44:výkazy 45:sestavuje.
-- pár: **která** (slovo 41) ↔ **sestavuje** (slovo 45) → vzdálenost **3**
+- pár: **která** (slovo 41) ↔ **sestavuje.** (slovo 45) → vzdálenost **3**
 - [ ] ✓ / oprava: 
 
 **52.** `cs_cltt/cs_cltt-ud-test.conllu::14`
@@ -364,7 +364,7 @@ Složení: finite verb / l-participle: 58, copular — finite copula (je): 17, c
 
 **62.** `cs_cltt/cs_cltt-ud-test.conllu::176`
 - 1:Pokud 2:v 3:den, 4:ke 5:kterému 6:se 7:ocenění 8:provádí, 9:uvedené 10:trhy 11:nepracují, 12:použije 13:se 14:cena 15:vyhlášená 16:na 17:nich 18:poslední 19:pracovní 20:den, 21:který 22:předchází 23:okamžiku 24:ocenění; 25:není-li 26:známa 27:ani 28:tato 29:cena, 30:postupuje 31:se 32:dále 33:podle 34:věty 35:druhé.
-- pár: **trhy** (slovo 10) ↔ **nepracují** (slovo 11) → vzdálenost **0**
+- pár: **trhy** (slovo 10) ↔ **nepracují,** (slovo 11) → vzdálenost **0**
 - [ ] ✓ / oprava: 
 
 **63.** `cs_cltt/cs_cltt-ud-test.conllu::186`
@@ -421,7 +421,7 @@ Složení: finite verb / l-participle: 58, copular — finite copula (je): 17, c
 
 **71.** `cs_cltt/cs_cltt-ud-test.conllu::38`
 - (…) 26:zůstatky 27:rozvahových 28:účtů, 29:jimiž 30:se 31:bezprostředně 32:předcházející 33:období 34:uzavřelo; 35:toto 36:ustanovení 37:platí 38:i 39:pro 40:podrozvahové 41:účty.
-- pár: **období** (slovo 33) ↔ **uzavřelo** (slovo 34) → vzdálenost **0**
+- pár: **období** (slovo 33) ↔ **uzavřelo;** (slovo 34) → vzdálenost **0**
 - [ ] ✓ / oprava: 
 
 **72.** `cs_cltt/cs_cltt-ud-test.conllu::42`
@@ -562,7 +562,7 @@ Složení: finite verb / l-participle: 58, copular — finite copula (je): 17, c
 
 **96.** `cs_cltt/cs_cltt-ud-train.conllu::35`
 - 1:(6) 2:Položky 3:rozvahy 4:(bilance) 5:a 6:položky 7:výkazu 8:zisku 9:a 10:ztráty 11:v 12:nulové 13:výši 14:za 15:minulé 16:i 17:běžné 18:účetní 19:období 20:se 21:neuvádějí.
-- pár: **Položky** (slovo 2) ↔ **neuvádějí** (slovo 21) → vzdálenost **18**
+- pár: **Položky** (slovo 2) ↔ **neuvádějí.** (slovo 21) → vzdálenost **18**
 - [ ] ✓ / oprava: 
 
 ## copular — finite copula (je)
@@ -586,7 +586,7 @@ Složení: finite verb / l-participle: 58, copular — finite copula (je): 17, c
 
 **100.** `cs_cltt/cs_cltt-ud-train.conllu::436`
 - 1:Zanikající 2:účetní 3:jednotka 4:nebo 5:účetní 6:jednotka 7:rozdělovaná 8:odštěpením 9:o 10:ocenění 11:majetku 12:a 13:závazků 14:reálnou 15:hodnotou 16:neúčtuje.
-- pár: **jednotka** (slovo 3) ↔ **neúčtuje** (slovo 16) → vzdálenost **12**
+- pár: **jednotka** (slovo 3) ↔ **neúčtuje.** (slovo 16) → vzdálenost **12**
 - [ ] ✓ / oprava: 
 
 ## copular — finite copula (je)

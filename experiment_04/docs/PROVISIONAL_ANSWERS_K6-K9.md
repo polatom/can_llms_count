@@ -17,6 +17,8 @@ the subject–predicate link at the *first* verb; later conjuncts inherit it); (
 conjunct verbs, and the extraction rule change is ~5 lines + rescoring.
 Risk if reversed: R1/R2 prompts state the one-pair convention → LLM re-runs needed. Accepted.
 
+KH: yes, one pair, because "odeslal" is a new clause
+
 ## K7 — verbless clauses with an overt subject → EXCLUDE (logged)
 
 *„Vstup zakázán."*-type (no copula/aux at all). Rationale: Katka's definition measures to the
@@ -24,6 +26,8 @@ element carrying agreement with the subject; a verbless clause has no such eleme
 nothing to measure to *within her definition* — exclusion is the definition-consistent choice,
 not a convenience. Prevalence: 46 subject edges in CLTT (vs. 1,586 pairs), 2/719 in KUK-640;
 counted and reported either way.
+
+KH: yes, no finite verb, no clause
 
 ## K8 — relative-pronoun subjects → INCLUDE in headline, report separately
 
@@ -34,6 +38,8 @@ pronouns are overt nominal subjects, and carving them out would be a post-hoc de
 (usually short: distances 0–1, which is *information*, not noise); (c) measured verdict impact
 of excluding them: F1 91.3 → 91.0 (negligible). The `subj_is_rel` flag is in every artifact, so
 the excluded view is one groupby away and will appear in the breakdowns table.
+
+KH: yes, "ktere"-"by" pair
 
 ## K9 — worked examples → self-reviewed, provisionally confirmed
 

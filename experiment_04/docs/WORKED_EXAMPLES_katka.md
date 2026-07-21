@@ -61,13 +61,13 @@ Derivation over the whole treebank: 1121 sentences → 1586 pairs. Distribution:
 - `cs_cltt/cs_cltt-ud-train.conllu::449`
   - (…) 31:který 32:je 33:účetní 34:jednotkou, 35:nástupnická 36:účetní 37:jednotka, 38:která 39:nebyla 40:zúčastněnou 41:účetní 42:jednotkou, 43:nebo 44:účetní 45:jednotka 46:uvedená (…)
   - ★ featured pair: **která** (word 38) ↔ **nebyla** (word 39) → distance **0**
-  - all other pairs in this sentence: den@8 ↔ neshoduje@9 (d=0); společnost@19 ↔ upraví@49 (d=29); která@20 ↔ je@21 (d=0); který@31 ↔ je@32 (d=0)
+  - all other pairs in this sentence: den@8 ↔ neshoduje@9 (d=0); společnost@19 ↔ upraví,@49 (d=29); která@20 ↔ je@21 (d=0); který@31 ↔ je@32 (d=0)
   - [ ] ✓ / correction: 
 
 - `cs_cltt/cs_cltt-ud-dev.conllu::143`
   - (…) 160:finančního 161:majetku 162:a 163:způsob 164:jejich 165:zaúčtování; 166:pokud 167:nebyl 168:cenný 169:papír, 170:podíl 171:a 172:derivát 173:oceněn 174:reálnou 175:hodnotou 176:nebo (…)
   - ★ featured pair: **papír** (word 169) ↔ **nebyl** (word 167) → distance **1**
-  - all other pairs in this sentence: jednotka@4 ↔ uvede@8 (d=3); které@26 ↔ jsou@27 (d=0); které@65 ↔ jsou@66 (d=0); jednotka@180 ↔ uvede@178 (d=1); které@192 ↔ nejsou@193 (d=0); informace@200 ↔ jsou@198 (d=1); závazky@210 ↔ uvedou@208 (d=1); kategorie@245 ↔ liší@251 (d=5); prodej@258 ↔ je@256 (d=1); které@275 ↔ nejsou@276 (d=0); rizika@288 ↔ jsou@287 (d=0); zveřejnění@298 ↔ je@297 (d=0); jednotka@322 ↔ uzavřely@335 (d=12); které@354 ↔ jsou@355 (d=0); transakce@364 ↔ jsou@362 (d=1); informace@388 ↔ jsou@386 (d=1); výraz@400 ↔ má@403 (d=2)
+  - all other pairs in this sentence: jednotka@4 ↔ uvede@8 (d=3); které@26 ↔ jsou@27 (d=0); které@65 ↔ jsou@66 (d=0); jednotka@180 ↔ uvede@178 (d=1); které@192 ↔ nejsou@193 (d=0); informace@200 ↔ jsou-li@198 (d=1); závazky@210 ↔ uvedou@208 (d=1); kategorie@245 ↔ liší@251 (d=5); prodej@258 ↔ je@256 (d=1); které@275 ↔ nejsou@276 (d=0); rizika@288 ↔ jsou@287 (d=0); zveřejnění@298 ↔ je@297 (d=0); jednotka@322 ↔ uzavřely@335 (d=12); které@354 ↔ jsou@355 (d=0); transakce@364 ↔ jsou@362 (d=1); informace@388 ↔ jsou@386 (d=1); výraz@400 ↔ má@403 (d=2)
   - [ ] ✓ / correction: 
 
 ## conditional (by)  (9 pairs in CLTT)
@@ -87,7 +87,7 @@ Derivation over the whole treebank: 1121 sentences → 1586 pairs. Distribution:
 - `cs_cltt/cs_cltt-ud-dev.conllu::251`
   - 1:Tam, 2:kde 3:účetní 4:jednotka 5:může 6:volit 7:mezi 8:více 9:možnostmi 10:dané 11:účetní 12:metody 13:a 14:zvolená 15:možnost 16:by 17:zastírala 18:skutečný 19:stav, 20:je 21:účetní 22:jednotka 23:povinna 24:zvolit 25:jinou 26:možnost, 27:která 28:skutečnému 29:stavu 30:odpovídá.
   - ★ featured pair: **možnost** (word 15) ↔ **by** (word 16) → distance **0**
-  - all other pairs in this sentence: jednotka@4 ↔ může@5 (d=0); jednotka@22 ↔ je@20 (d=1); která@27 ↔ odpovídá@30 (d=2)
+  - all other pairs in this sentence: jednotka@4 ↔ může@5 (d=0); jednotka@22 ↔ je@20 (d=1); která@27 ↔ odpovídá.@30 (d=2)
   - [ ] ✓ / correction: 
 
 ## aby/kdyby (absorbed by)  (9 pairs in CLTT)
@@ -95,7 +95,7 @@ Derivation over the whole treebank: 1121 sentences → 1586 pairs. Distribution:
 - `cs_cltt/cs_cltt-ud-dev.conllu::115`
   - 1:Vyloučením 2:se 3:rozumí 4:takové 5:operace, 6:které 7:umožní, 8:aby 9:konsolidovaná 10:účetní 11:závěrka 12:neobsahovala 13:vzájemné 14:transakce, 15:které 16:byly 17:realizovány 18:účetními 19:jednotkami 20:v 21:konsolidaci.
   - ★ featured pair: **závěrka** (word 11) ↔ **aby** (word 8, measured token: by) → distance **2**
-  - all other pairs in this sentence: operace@5 ↔ rozumí@3 (d=1); které@6 ↔ umožní@7 (d=0); které@15 ↔ byly@16 (d=0)
+  - all other pairs in this sentence: operace@5 ↔ rozumí@3 (d=1); které@6 ↔ umožní,@7 (d=0); které@15 ↔ byly@16 (d=0)
   - [ ] ✓ / correction: 
 
 - `cs_cltt/cs_cltt-ud-test.conllu::286`
@@ -107,7 +107,7 @@ Derivation over the whole treebank: 1121 sentences → 1586 pairs. Distribution:
 - `cs_cltt/cs_cltt-ud-train.conllu::140`
   - 1:Pokud 2:banka 3:umožňuje, 4:aby 5:byl 6:ke 7:konci 8:rozvahového 9:dne 10:vykázán 11:pasivní 12:zůstatek 13:u 14:běžného 15:účtu, 16:pak 17:je 18:tento 19:zůstatek 20:obsahem 21:položky 22:„B.IV.2. 23:Krátkodobé 24:bankovní 25:úvěry“.
   - ★ featured pair: **zůstatek** (word 12) ↔ **aby** (word 4, measured token: by) → distance **7**
-  - all other pairs in this sentence: banka@2 ↔ umožňuje@3 (d=0); zůstatek@19 ↔ je@17 (d=1)
+  - all other pairs in this sentence: banka@2 ↔ umožňuje,@3 (d=0); zůstatek@19 ↔ je@17 (d=1)
   - [ ] ✓ / correction: 
 
 ## passive — finite aux (je/bude vydána)  (33 pairs in CLTT)
@@ -139,7 +139,7 @@ Derivation over the whole treebank: 1121 sentences → 1586 pairs. Distribution:
 - `cs_cltt/cs_cltt-ud-train.conllu::285`
   - 1:Účetní 2:jednotka 3:uvede 4:dále, 5:zda 6:byly 7:uzavřeny 8:ovládací 9:smlouvy 10:nebo 11:smlouvy 12:o 13:převodech 14:zisku 15:a 16:jaké 17:povinnosti 18:z 19:nich 20:vyplývají.
   - ★ featured pair: **smlouvy** (word 9) ↔ **byly** (word 6) → distance **2**
-  - all other pairs in this sentence: jednotka@2 ↔ uvede@3 (d=0); povinnosti@17 ↔ vyplývají@20 (d=2)
+  - all other pairs in this sentence: jednotka@2 ↔ uvede@3 (d=0); povinnosti@17 ↔ vyplývají.@20 (d=2)
   - [ ] ✓ / correction: 
 
 - `cs_cltt/cs_cltt-ud-train.conllu::308`
@@ -164,7 +164,7 @@ Derivation over the whole treebank: 1121 sentences → 1586 pairs. Distribution:
 - `cs_cltt/cs_cltt-ud-train.conllu::108`
   - 1:Položka 2:obsahuje 3:dále 4:výrobky 5:vlastní 6:výroby, 7:které 8:byly 9:aktivovány 10:a 11:předány 12:do 13:vlastních 14:prodejen, 15:a 16:zvířata 17:vlastního 18:chovu, 19:která 20:dospěla, 21:byla 22:aktivována 23:a 24:jsou 25:určena 26:k 27:prodeji 28:s 29:výjimkou 30:jatečných 31:zvířat.
   - ★ featured pair: **které** (word 7) ↔ **byly** (word 8) → distance **0**
-  - all other pairs in this sentence: Položka@1 ↔ obsahuje@2 (d=0); která@19 ↔ dospěla@20 (d=0)
+  - all other pairs in this sentence: Položka@1 ↔ obsahuje@2 (d=0); která@19 ↔ dospěla,@20 (d=0)
   - [ ] ✓ / correction: 
 
 ## Open category — verbless clauses (new question, K7)

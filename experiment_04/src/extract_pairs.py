@@ -43,8 +43,9 @@ class Pair:
     subj_form: str
     subj_word_idx: int  # 1-based whitespace-word position
     pred_tok_id: int
-    pred_form: str  # form of the measured predicate TOKEN (e.g. "by")
-    pred_word_form: str  # surface word carrying it (e.g. "aby")
+    subj_word_form: str  # full surface WORD carrying the subject (e.g. "informace,")
+    pred_form: str  # form of the measured predicate TOKEN (e.g. "by", "Jsou")
+    pred_word_form: str  # full surface WORD carrying it (e.g. "aby", "Jsou-li")
     pred_word_idx: int  # 1-based
     head_tok_id: int  # clause head the nsubj attaches to
     distance: int  # words strictly between, §3.4
@@ -167,6 +168,18 @@ def extract(sentence: Sentence) -> SentenceExtraction:
     in_mwt = _mwt_membership(sentence)
     anomalies: list[str] = []
 
+    # full surface words from the raw text — the unit models and humans see.
+    # (Token forms differ for glued multi-token words that are NOT MWTs, e.g.
+    # "Jsou-li" = tokens "Jsou"+"-li"; found 2026-07-21 via spurious-pair audit.)
+    surface_words = (sentence.text or "").split()
+    if surface_words and len(surface_words) != n_words:
+        anomalies.append(f"surface_word_count_mismatch:{len(surface_words)}!={n_words}")
+
+    def surface(word_idx0: int, fallback: str) -> str:
+        if 0 <= word_idx0 < len(surface_words):
+            return surface_words[word_idx0]
+        return fallback
+
     # --- candidate finite predicate complexes (for clause counts / pro-drop / fragments)
     finite_heads: list[Token] = []
     for t in sentence.tokens:
@@ -219,11 +232,12 @@ def extract(sentence: Sentence) -> SentenceExtraction:
         else:
             d = abs(sw - pw) - 1
 
-        pred_word_form = in_mwt.get(pred.id, pred.form)
+        pred_word_form = surface(pw, in_mwt.get(pred.id, pred.form))
         pairs.append(
             Pair(
                 subj_tok_id=t.id,
                 subj_form=t.form,
+                subj_word_form=surface(sw, t.form),
                 subj_word_idx=sw + 1,
                 pred_tok_id=pred.id,
                 pred_form=pred.form,
@@ -296,6 +310,7 @@ def extraction_to_dict(uid: str, subcorpus: str, ext: SentenceExtraction) -> dic
         "pairs": [
             {
                 "subj_form": p.subj_form,
+                "subj_word_form": p.subj_word_form,
                 "subj_word_idx": p.subj_word_idx,
                 "pred_form": p.pred_form,
                 "pred_word_form": p.pred_word_form,

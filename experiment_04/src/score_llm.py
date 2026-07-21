@@ -92,7 +92,8 @@ def greedy_match(gold_pairs, model_pairs):
     used = set()
     out = []
     for g in gold_pairs:
-        gs, gp = norm(g["subj_form"]), norm(g["pred_word_form"])
+        gs = norm(g.get("subj_word_form") or g["subj_form"])
+        gp = norm(g["pred_word_form"])
         best = None
         for j, m in enumerate(model_pairs):
             if j in used:
