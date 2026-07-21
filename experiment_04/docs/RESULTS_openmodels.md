@@ -15,6 +15,7 @@ Gold: 1121 units / 1586 pairs (K6–K9 provisional). Parser baseline (presegment
 | gemma-27b | r3 | 1 | 1121 | 83.1 | 50.7 | 88.1 | **64.4** | 56.4 | 64.1 | 93.0 | 94.2 | 99.9 | 0.27 |
 | gemma-27b | r3 | 2 | 1121 | 82.4 | 49.6 | 86.6 | **63.0** | 55.6 | 63.7 | 93.4 | 93.8 | 100.0 | 0.27 |
 | gemma-27b | r3 | 3 | 1121 | 82.5 | 49.7 | 87.6 | **63.4** | 56.4 | 64.6 | 93.4 | 93.9 | 99.9 | 0.27 |
+| gemma-27b | r4 | 1 | 821 | 84.9 | 54.0 | 85.2 | **66.1** | 57.5 | 62.1 | 89.0 | 94.2 | 99.8 | 0.24 |
 | qwen-72b | r1 | 1 | 1121 | 80.5 | 46.5 | 84.5 | **60.0** | 29.7 | 27.2 | 14.1 | 31.7 | 100.0 | 0.58 |
 | qwen-72b | r1 | 2 | 1121 | 78.9 | 44.2 | 82.5 | **57.6** | 28.8 | 26.1 | 13.0 | 29.0 | 99.9 | 0.58 |
 | qwen-72b | r1 | 3 | 1121 | 79.4 | 44.8 | 82.0 | **57.9** | 28.6 | 26.3 | 14.6 | 28.8 | 99.8 | 0.59 |
@@ -24,6 +25,9 @@ Gold: 1121 units / 1586 pairs (K6–K9 provisional). Parser baseline (presegment
 | qwen-72b | r3 | 1 | 1121 | 89.4 | 63.2 | 92.8 | **75.2** | 62.1 | 72.1 | 72.5 | 95.8 | 100.0 | 1.32 |
 | qwen-72b | r3 | 2 | 1121 | 88.8 | 62.4 | 89.7 | **73.6** | 61.4 | 70.0 | 58.6 | 95.7 | 100.0 | 1.33 |
 | qwen-72b | r3 | 3 | 1121 | 89.7 | 64.0 | 91.8 | **75.4** | 63.8 | 72.3 | 57.5 | 95.4 | 100.0 | 1.32 |
+| qwen-72b | r4 | 1 | 1121 | 89.2 | 62.8 | 92.3 | **74.7** | 66.3 | 75.3 | 49.0 | 95.1 | 100.0 | 1.68 |
+| qwen-72b | r4 | 2 | 1121 | 90.6 | 66.3 | 93.3 | **77.5** | 66.8 | 76.0 | 49.3 | 95.8 | 99.6 | 1.68 |
+| qwen-72b | r4 | 3 | 1121 | 90.4 | 65.2 | 94.8 | **77.3** | 66.9 | 76.4 | 49.7 | 94.9 | 100.0 | 1.67 |
 
 ## Stability (verdict flip rate across passes)
 
@@ -33,6 +37,7 @@ Gold: 1121 units / 1586 pairs (K6–K9 provisional). Parser baseline (presegment
 - qwen-72b × r1: 9.9% of 1121 units flip across 3 passes
 - qwen-72b × r2: 10.1% of 1121 units flip across 3 passes
 - qwen-72b × r3: 7.0% of 1121 units flip across 3 passes
+- qwen-72b × r4: 5.4% of 1121 units flip across 3 passes
 
 ## Validation catch-rates (recorded, never corrected)
 
@@ -45,6 +50,7 @@ Gold: 1121 units / 1586 pairs (K6–K9 provisional). Parser baseline (presegment
 - gemma-27b × r3 × run1: {'form_at_index_mismatch': 282, 'parse_malformed': 1, 'no_pairs_field': 1, 'index_out_of_bounds': 10, 'nonint_index': 3}
 - gemma-27b × r3 × run2: {'form_at_index_mismatch': 284, 'index_out_of_bounds': 15, 'nonint_index': 2}
 - gemma-27b × r3 × run3: {'form_at_index_mismatch': 279, 'parse_malformed': 1, 'no_pairs_field': 1, 'index_out_of_bounds': 20, 'nonint_index': 7}
+- gemma-27b × r4 × run1: {'form_at_index_mismatch': 191, 'parse_malformed': 2, 'no_pairs_field': 2, 'index_out_of_bounds': 3}
 - qwen-72b × r1 × run1: {'index_out_of_bounds': 37, 'form_at_index_mismatch': 1160}
 - qwen-72b × r1 × run2: {'index_out_of_bounds': 43, 'form_at_index_mismatch': 1141, 'parse_malformed': 1, 'no_pairs_field': 1}
 - qwen-72b × r1 × run3: {'form_at_index_mismatch': 1172, 'index_out_of_bounds': 43, 'parse_malformed': 2, 'no_pairs_field': 2}
@@ -54,3 +60,6 @@ Gold: 1121 units / 1586 pairs (K6–K9 provisional). Parser baseline (presegment
 - qwen-72b × r3 × run1: {'form_at_index_mismatch': 732, 'index_out_of_bounds': 3}
 - qwen-72b × r3 × run2: {'form_at_index_mismatch': 971, 'index_out_of_bounds': 108}
 - qwen-72b × r3 × run3: {'form_at_index_mismatch': 935, 'index_out_of_bounds': 53}
+- qwen-72b × r4 × run1: {'form_at_index_mismatch': 1126, 'index_out_of_bounds': 4}
+- qwen-72b × r4 × run2: {'form_at_index_mismatch': 1124, 'index_out_of_bounds': 7, 'parse_partial': 4, 'nonint_index': 1}
+- qwen-72b × r4 × run3: {'form_at_index_mismatch': 1114, 'index_out_of_bounds': 3}

@@ -228,6 +228,32 @@
       "cost_usd": 0.2696
     },
     {
+      "model": "gemma-27b",
+      "form": "r4",
+      "run": 1,
+      "n": 821,
+      "verdict_acc": 0.8489646772228989,
+      "verdict_p": 0.5401785714285714,
+      "verdict_r": 0.852112676056338,
+      "verdict_f1": 0.6612021857923497,
+      "pair_p": 0.5359765051395007,
+      "pair_r": 0.6212765957446809,
+      "pair_f1": 0.5754828537642884,
+      "naming_recall": 0.6212765957446809,
+      "pos_given_named": 0.8904109589041096,
+      "dist_exact_given_named": 0.9424657534246575,
+      "dist_w1_given_named": 0.9794520547945206,
+      "dist_mae": 0.20684931506849316,
+      "parse_ok_rate": 0.997563946406821,
+      "val_flags": {
+        "form_at_index_mismatch": 191,
+        "parse_malformed": 2,
+        "no_pairs_field": 2,
+        "index_out_of_bounds": 3
+      },
+      "cost_usd": 0.243
+    },
+    {
       "model": "qwen-72b",
       "form": "r1",
       "run": 1,
@@ -448,6 +474,80 @@
         "index_out_of_bounds": 53
       },
       "cost_usd": 1.3228
+    },
+    {
+      "model": "qwen-72b",
+      "form": "r4",
+      "run": 1,
+      "n": 1121,
+      "verdict_acc": 0.8920606601248885,
+      "verdict_p": 0.6280701754385964,
+      "verdict_r": 0.9226804123711341,
+      "verdict_f1": 0.7473903966597077,
+      "pair_p": 0.5915841584158416,
+      "pair_r": 0.7534678436317781,
+      "pair_f1": 0.6627842484747642,
+      "naming_recall": 0.7534678436317781,
+      "pos_given_named": 0.4903765690376569,
+      "dist_exact_given_named": 0.9514644351464435,
+      "dist_w1_given_named": 0.9849372384937238,
+      "dist_mae": 0.10125523012552301,
+      "parse_ok_rate": 1.0,
+      "val_flags": {
+        "form_at_index_mismatch": 1126,
+        "index_out_of_bounds": 4
+      },
+      "cost_usd": 1.6753
+    },
+    {
+      "model": "qwen-72b",
+      "form": "r4",
+      "run": 2,
+      "n": 1121,
+      "verdict_acc": 0.9063336306868867,
+      "verdict_p": 0.663003663003663,
+      "verdict_r": 0.9329896907216495,
+      "verdict_f1": 0.7751605995717344,
+      "pair_p": 0.5958498023715415,
+      "pair_r": 0.7604035308953342,
+      "pair_f1": 0.6681440443213297,
+      "naming_recall": 0.7604035308953342,
+      "pos_given_named": 0.4925373134328358,
+      "dist_exact_given_named": 0.9576763485477179,
+      "dist_w1_given_named": 0.9900414937759336,
+      "dist_mae": 0.1020746887966805,
+      "parse_ok_rate": 0.9964317573595004,
+      "val_flags": {
+        "form_at_index_mismatch": 1124,
+        "index_out_of_bounds": 7,
+        "parse_partial": 4,
+        "nonint_index": 1
+      },
+      "cost_usd": 1.6783
+    },
+    {
+      "model": "qwen-72b",
+      "form": "r4",
+      "run": 3,
+      "n": 1121,
+      "verdict_acc": 0.903657448706512,
+      "verdict_p": 0.6524822695035462,
+      "verdict_r": 0.9484536082474226,
+      "verdict_f1": 0.773109243697479,
+      "pair_p": 0.5945017182130584,
+      "pair_r": 0.7635561160151324,
+      "pair_f1": 0.6685067623516423,
+      "naming_recall": 0.7635561160151324,
+      "pos_given_named": 0.49710982658959535,
+      "dist_exact_given_named": 0.9488026424442609,
+      "dist_w1_given_named": 0.9884393063583815,
+      "dist_mae": 0.18497109826589594,
+      "parse_ok_rate": 1.0,
+      "val_flags": {
+        "form_at_index_mismatch": 1114,
+        "index_out_of_bounds": 3
+      },
+      "cost_usd": 1.6735
     }
   ],
   "stability": [
@@ -492,6 +592,13 @@
       3,
       1121,
       0.0695807314897413
+    ],
+    [
+      "qwen-72b",
+      "r4",
+      3,
+      1121,
+      0.05352363960749331
     ]
   ]
 }
