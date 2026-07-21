@@ -49,9 +49,11 @@
     "r1": "r1_naive.txt",
     "r2": "r2_procedural.txt",
     "r3": "r3_procedural_inventory.txt",
-    "r4": "r4_procedural_pairing.txt"
+    "r4": "r4_procedural_pairing.txt",
+    "r5": "r5_procedural_precision.txt"
   },
   "_r3_note": "added 2026-07-20 per METHODOLOGY sec.12 escape hatch (R2 beat R1): identification scaffold — per-word verb inventory, closed byt/aby lists, accounting invariant. Smoke: 20/20 parse-ok (after llm_io scanner fix).",
   "_formulations_note": "r0_production_verbatim.txt = optional reference arm, add to the map to run",
-  "_r4_note": "added 2026-07-21: R3 + pairing fixes (Katka's K10 elimination algorithm for rel-prons, preposition rule, same-clause discipline, predicate uniqueness). Provenance: docs/KATKA_K10_relative_pronouns_2026-07-21.md"
+  "_r4_note": "added 2026-07-21: R3 + pairing fixes (Katka's K10 elimination algorithm for rel-prons, preposition rule, same-clause discipline, predicate uniqueness). Provenance: docs/KATKA_K10_relative_pronouns_2026-07-21.md",
+  "_r5_note": "added 2026-07-21: R4 + pair-level precision surgery (instrumental test, same-clause hard rule, KROK5 aby-enforcement) + Katka wording fixes. FP attribution showed ~90% of false flags are fabricated pairs, verdict tone untouched."
 }
