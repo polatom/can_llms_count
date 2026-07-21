@@ -12,20 +12,27 @@ Gold: 1121 units / 1586 pairs (K6–K9 provisional). Parser baseline (presegment
 | gemma-27b | r2 | 1 | 1121 | 88.6 | 62.1 | 87.1 | **72.5** | 34.7 | 34.0 | 96.5 | 93.3 | 100.0 | 0.22 |
 | gemma-27b | r2 | 2 | 1121 | 89.7 | 64.4 | 91.2 | **75.5** | 34.5 | 33.8 | 94.6 | 93.5 | 100.0 | 0.22 |
 | gemma-27b | r2 | 3 | 1121 | 88.9 | 62.9 | 88.1 | **73.4** | 33.6 | 32.7 | 96.7 | 93.1 | 99.9 | 0.22 |
-| gemma-27b | r3 | 1 | 2 | 100.0 | 0.0 | 0.0 | **0.0** | 0.0 | 0.0 | 0.0 | 0.0 | 100.0 | 0.00 |
+| gemma-27b | r3 | 1 | 1121 | 83.1 | 50.7 | 88.1 | **64.4** | 56.0 | 63.7 | 93.1 | 94.2 | 99.9 | 0.27 |
+| gemma-27b | r3 | 2 | 1121 | 82.4 | 49.6 | 86.6 | **63.0** | 55.4 | 63.5 | 93.4 | 93.7 | 100.0 | 0.27 |
+| gemma-27b | r3 | 3 | 1121 | 82.5 | 49.7 | 87.6 | **63.4** | 56.2 | 64.4 | 93.2 | 93.6 | 99.9 | 0.27 |
 | qwen-72b | r1 | 1 | 1121 | 80.5 | 46.5 | 84.5 | **60.0** | 29.5 | 27.0 | 14.2 | 31.5 | 100.0 | 0.58 |
 | qwen-72b | r1 | 2 | 1121 | 78.9 | 44.2 | 82.5 | **57.6** | 28.7 | 26.0 | 13.1 | 28.6 | 99.9 | 0.58 |
 | qwen-72b | r1 | 3 | 1121 | 79.4 | 44.8 | 82.0 | **57.9** | 28.4 | 26.1 | 14.7 | 28.7 | 99.8 | 0.59 |
 | qwen-72b | r2 | 1 | 1121 | 88.8 | 62.7 | 86.6 | **72.7** | 49.1 | 49.4 | 95.2 | 97.2 | 100.0 | 0.95 |
 | qwen-72b | r2 | 2 | 1121 | 89.4 | 63.9 | 88.7 | **74.3** | 49.9 | 50.8 | 94.2 | 96.3 | 100.0 | 0.95 |
 | qwen-72b | r2 | 3 | 1121 | 87.8 | 60.5 | 84.5 | **70.5** | 48.8 | 49.3 | 95.5 | 96.3 | 99.8 | 0.95 |
+| qwen-72b | r3 | 1 | 1121 | 89.4 | 63.2 | 92.8 | **75.2** | 61.5 | 71.4 | 72.6 | 95.7 | 100.0 | 1.32 |
+| qwen-72b | r3 | 2 | 1105 | 88.9 | 61.7 | 90.4 | **73.3** | 60.9 | 69.3 | 58.8 | 95.6 | 100.0 | 1.31 |
+| qwen-72b | r3 | 3 | 1060 | 89.4 | 63.4 | 91.2 | **74.8** | 63.5 | 71.6 | 56.8 | 95.4 | 100.0 | 1.25 |
 
 ## Stability (verdict flip rate across passes)
 
 - gemma-27b × r1: 8.8% of 1121 units flip across 3 passes
 - gemma-27b × r2: 11.2% of 1121 units flip across 3 passes
+- gemma-27b × r3: 7.5% of 1121 units flip across 3 passes
 - qwen-72b × r1: 9.9% of 1121 units flip across 3 passes
 - qwen-72b × r2: 10.1% of 1121 units flip across 3 passes
+- qwen-72b × r3: 7.2% of 1045 units flip across 3 passes
 
 ## Validation catch-rates (recorded, never corrected)
 
@@ -35,9 +42,15 @@ Gold: 1121 units / 1586 pairs (K6–K9 provisional). Parser baseline (presegment
 - gemma-27b × r2 × run1: {'form_at_index_mismatch': 597, 'nonint_index': 3, 'index_out_of_bounds': 6}
 - gemma-27b × r2 × run2: {'form_at_index_mismatch': 561, 'nonint_index': 1}
 - gemma-27b × r2 × run3: {'nonint_index': 3, 'form_at_index_mismatch': 607, 'index_out_of_bounds': 5, 'parse_malformed': 1, 'no_pairs_field': 1}
+- gemma-27b × r3 × run1: {'form_at_index_mismatch': 282, 'parse_malformed': 1, 'no_pairs_field': 1, 'index_out_of_bounds': 10, 'nonint_index': 3}
+- gemma-27b × r3 × run2: {'form_at_index_mismatch': 284, 'index_out_of_bounds': 15, 'nonint_index': 2}
+- gemma-27b × r3 × run3: {'form_at_index_mismatch': 279, 'parse_malformed': 1, 'no_pairs_field': 1, 'index_out_of_bounds': 20, 'nonint_index': 7}
 - qwen-72b × r1 × run1: {'index_out_of_bounds': 37, 'form_at_index_mismatch': 1160}
 - qwen-72b × r1 × run2: {'index_out_of_bounds': 43, 'form_at_index_mismatch': 1141, 'parse_malformed': 1, 'no_pairs_field': 1}
 - qwen-72b × r1 × run3: {'form_at_index_mismatch': 1172, 'index_out_of_bounds': 43, 'parse_malformed': 2, 'no_pairs_field': 2}
 - qwen-72b × r2 × run1: {'form_at_index_mismatch': 240, 'index_out_of_bounds': 4}
 - qwen-72b × r2 × run2: {'form_at_index_mismatch': 243, 'index_out_of_bounds': 5}
 - qwen-72b × r2 × run3: {'form_at_index_mismatch': 243, 'index_out_of_bounds': 4, 'parse_malformed': 2, 'no_pairs_field': 2}
+- qwen-72b × r3 × run1: {'form_at_index_mismatch': 732, 'index_out_of_bounds': 3}
+- qwen-72b × r3 × run2: {'form_at_index_mismatch': 956, 'index_out_of_bounds': 108}
+- qwen-72b × r3 × run3: {'form_at_index_mismatch': 886, 'index_out_of_bounds': 52}
