@@ -14,9 +14,9 @@ How to read the examples:
   distinction may blur — please judge the measured PAIR, the label is only a grouping.
 - **Please mark each ✓ or correct it.**
 
-Derivation over the whole treebank: 1121 sentences → 1586 pairs. Distribution: finite verb / l-participle: 1147, copular — finite copula (je): 350, passive — finite aux (je/bude vydána): 33, passive — past aux (byla vydána): 31, conditional (by): 9, aby/kdyby (absorbed by): 9, analytic — aux (jsem/bude …): 4, copular — past copula (byla): 3
+Derivation over the whole treebank: 1121 sentences → 1617 pairs. Distribution: finite verb / l-participle: 1178, copular — finite copula (je): 350, passive — finite aux (je/bude vydána): 33, passive — past aux (byla vydána): 31, conditional (by): 9, aby/kdyby (absorbed by): 9, analytic — aux (jsem/bude …): 4, copular — past copula (byla): 3
 
-## finite verb / l-participle  (1147 pairs in CLTT)
+## finite verb / l-participle  (1178 pairs in CLTT)
 
 - `cs_cltt/cs_cltt-ud-test.conllu::299`
   - 1:Ministerstvo 2:vede 3:registr 4:vydaných 5:standardů.
@@ -176,8 +176,6 @@ and logs them — they are ~8% of subject edges in the KUK sample (mostly ADJ he
 Question: exclude (current), or measure to the non-verbal head itself?
 
 - `cs_cltt/cs_cltt-ud-dev.conllu::205`: Hospodářským rokem je účetní období, které může začínat pouze prvním dnem jiného měsíce, než je leden.
-- `cs_cltt/cs_cltt-ud-dev.conllu::272`: (1) Nestanoví-li tento zákon nebo zvláštní právní předpis jinak, účetní jednotky jsou povinny vést účetnictví v plném rozsahu.
 - `cs_cltt/cs_cltt-ud-test.conllu::127`: (2) Konsolidující účetní jednotky neuvedené v odstavci 1 mohou pro sestavení konsolidované účetní závěrky použít mezinárodní účetní standardy.
-- `cs_cltt/cs_cltt-ud-test.conllu::223`: Nestanoví-li tento zákon jinak, platí pro nakládání s nimi zvláštní právní předpisy.
 
 - [ ] exclude (current rule)   [ ] measure to the head   [ ] other: 

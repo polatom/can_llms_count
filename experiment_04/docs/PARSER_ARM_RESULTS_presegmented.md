@@ -16,9 +16,9 @@ Gold may shift when Katka's K6–K9 answers land; rescoring is deterministic and
 
 ## Pair extraction
 
-- gold pairs 1586, predicted 1576
-- form-matched: 1512 → precision 95.9%, recall 95.3%, F1 95.6%
-- index-exact matched: 1510 (95.2% of gold)
+- gold pairs 1617, predicted 1576
+- form-matched: 1541 → precision 97.8%, recall 95.3%, F1 96.5%
+- index-exact matched: 1539 (95.2% of gold)
 - distance on form-matched pairs: exact 99.8%, ±1 99.8%, MAE 0.06
 
 ## Segmentation (the known upstream error)

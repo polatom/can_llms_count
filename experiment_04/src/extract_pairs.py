@@ -115,13 +115,24 @@ def _measured_predicate(head: Token, kids: list[Token]) -> tuple[Token, bool, li
     return head, True, []
 
 
+def _is_li_fused(head: Token) -> bool:
+    """K13 (2026-07-21): fused conditional verb forms ("Nestanoví-li") are
+    systematically mis-tagged NOUN in the converted cs_cltt treebank (31 of 46
+    'verbless' exclusions), silently dropping legitimate pairs from the gold.
+    Treat a non-VERB nsubj-head whose form ends in "-li" as a finite verb."""
+    return head.form.lower().endswith("-li") and len(head.form) > 3
+
+
 def _is_finite_complex(head: Token, kids: list[Token]) -> bool:
     """Is this head a finite predicate complex (§3: 'finite clause')?
 
     True if it has a finite OR participial aux/cop child (past forms of "být"
     are l-participles, VerbForm=Part), or is itself a finite verb or a bare
-    l-participle (3rd-person past). Converbs and bare infinitives are not.
+    l-participle (3rd-person past), or a K13 fused "-li" form. Converbs and
+    bare infinitives are not.
     """
+    if _is_li_fused(head):
+        return True
     if any(
         _base(c.deprel) in ("aux", "cop") and (_FIN in c.feats or _PART in c.feats)
         for c in kids
@@ -210,7 +221,7 @@ def extract(sentence: Sentence) -> SentenceExtraction:
             _base(c.deprel) in ("aux", "cop") and (_FIN in c.feats or _PART in c.feats)
             for c in hkids
         )
-        head_verbal = head.upos == "VERB" and _CONV not in head.feats
+        head_verbal = (head.upos == "VERB" and _CONV not in head.feats) or _is_li_fused(head)
         if not has_auxcop and not head_verbal:
             # nominal/adjectival head, NO aux/cop at all -> verbless clause (§3.3, K7)
             nonverbal_excluded += 1
