@@ -203,7 +203,7 @@ Složení: finite verb / l-participle: 58, copular — finite copula (je): 17, c
 
 **35.** `cs_cltt/cs_cltt-ud-dev.conllu::203`
 - 1:(2) 2:Účetním 3:obdobím 4:je 5:nepřetržitě 6:po 7:sobě 8:jdoucích 9:dvanáct 10:měsíců, 11:není-li 12:dále 13:stanoveno 14:jinak.
-- pár: **měsíců** (slovo 10) ↔ **je** (slovo 4) → vzdálenost **5**
+- pár: **dvanáct** (slovo 9) ↔ **je** (slovo 4) → vzdálenost **4**
 - [ ] ✓ / oprava: 
 
 **36.** `cs_cltt/cs_cltt-ud-dev.conllu::210`

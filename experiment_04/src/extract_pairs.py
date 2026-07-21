@@ -220,7 +220,20 @@ def extract(sentence: Sentence) -> SentenceExtraction:
         pred, is_fallback, an = _measured_predicate(head, hkids)
         p_anoms = list(an)
 
-        sw = token_word.get(t.id)
+        # K12 (provisional, from verification item 35, 2026-07-21): quantified
+        # subjects ("dvanáct měsíců") — UD heads the GENITIVE noun, but the
+        # nominative element (the governing quantifier) is the subject word
+        # under Katka's definition. Exactly 1/1,586 CLTT pairs; Katka to confirm.
+        subj_meas = t
+        qgov = [c for c in kids.get(t.id, [])
+                if c.deprel in ("nummod:gov", "det:numgov")]
+        if len(qgov) == 1:
+            subj_meas = qgov[0]
+            p_anoms.append("subj_quantifier_gov")
+        elif len(qgov) > 1:
+            p_anoms.append(f"multiple_quantifier_gov:{'+'.join(c.form for c in qgov)}")
+
+        sw = token_word.get(subj_meas.id)
         pw = token_word.get(pred.id)
         if sw is None or pw is None:
             anomalies.append(f"word_index_missing:pair@{t.id}")
@@ -236,8 +249,8 @@ def extract(sentence: Sentence) -> SentenceExtraction:
         pairs.append(
             Pair(
                 subj_tok_id=t.id,
-                subj_form=t.form,
-                subj_word_form=surface(sw, t.form),
+                subj_form=subj_meas.form,
+                subj_word_form=surface(sw, subj_meas.form),
                 subj_word_idx=sw + 1,
                 pred_tok_id=pred.id,
                 pred_form=pred.form,
