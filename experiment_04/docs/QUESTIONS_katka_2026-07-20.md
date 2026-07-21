@@ -1,4 +1,27 @@
-# Otázky pro Katku — experiment_04 (2026-07-20)
+# Otázky pro Katku — experiment_04 (2026-07-20; doplněno 2026-07-21 před hovorem)
+
+> **Aktuální stav (21. 7.):** abychom neblokovali běh, otázky 2–4 jsme provizorně zodpověděli
+> sami (`PROVISIONAL_ANSWERS_K6-K9.md`) a experiment běžel s nimi — pro hovor tedy stačí
+> **potvrdit/vetovat** (dopad má hlavně veto K6). A jedna novinka k tvé hypotéze: měla jsi
+> pravdu — když jsme definice přepsali do elementárních testů a uzavřených seznamů tvarů
+> („být", aby/kdyby), identifikace párů u 72B modelu stoupla z 50 % na 71 %. Zbývající chyby
+> jsou v PÁROVÁNÍ — a k tomu míří dvě nové otázky níže (7 a 8).
+
+## 7. NOVÉ — vztažné zájmeno: podmět × předmět (příčina chyb modelu)
+
+Napsali jsme modelu pravidlo „vztažná zájmena jsou podměty svých vedlejších vět" — a přestřelili:
+model teď páruje i vztažná zájmena v předmětové pozici. Příklad z dat:
+*„…informace…, **které** musí obsahovat výroční **zpráva**…"* — model: pár które↔musí (špatně);
+správně: zpráva↔musí (podmět za přísudkem, „které" je předmět).
+**Jaký elementární test doporučíš pro rozlišení?** (Naše ideje: shoda v čísle/rodě s přísudkem;
+zkusit dosadit „kdo/co" vs. „koho/co"; kontrola, zda ve vedlejší větě není jiné jméno
+v nominativu ve shodě. Co z toho je pro laika/model nejspolehlivější?)
+
+## 8. NOVÉ — slova typu „Jsou-li", „není-li"
+
+U vět jako *„**Jsou-li** obsahem výroční zprávy i informace…"* měříme k „jsou" — na úrovni slov
+je to slovo „Jsou-li". Souhlasíš, že měřený přísudek je (celé) slovo „Jsou-li"? (Analogie
+s aby/kdyby; technicky opravujeme, aby se vykazovalo celé slovo.)
 
 Kontext: metodika je zamrazená (experiment_04/METHODOLOGY.md), tvoje definice přísudku z minulé
 revize je zapracovaná a mechanicky aplikovaná na CLTT (ručně anotované stromy — tvůj a Bářin
