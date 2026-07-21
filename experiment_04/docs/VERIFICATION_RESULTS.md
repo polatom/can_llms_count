@@ -19,9 +19,10 @@ Response: VERIFICATION_SHEET_katka_response_2026-07-21.md.
 
 **Measured error rate of the derived gold (preliminary, pending the 11 follow-ups):**
 1 error / 94 verifiable = **1.1%** (plus 1 ambiguous = worst case 2.1%). For the paper: the
-CLTT-derived gold is validated at ~99% pair-level accuracy by the treebank's own co-author,
-with the single found error traced to a definition/annotation-convention divergence and fixed
-mechanically.
+CLTT-derived gold is validated at ~99% pair-level accuracy by an **independent expert linguist**
+(Katka is not a CLTT author — the treebank is Kříž & Hladká — which makes this external
+verification, not author self-verification), with the single found error traced to a
+definition/annotation-convention divergence and fixed mechanically.
 
 Effect of the K12 fix on results: 1 pair changes (d 5 → 4, both below threshold) — verdicts,
 parser-arm metrics (F1 97.1), and LLM scores unchanged at reported precision.
