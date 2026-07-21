@@ -22,8 +22,8 @@ Gold: 1121 units / 1586 pairs (K6–K9 provisional). Parser baseline (presegment
 | qwen-72b | r2 | 2 | 1121 | 89.4 | 63.9 | 88.7 | **74.3** | 49.9 | 50.8 | 94.2 | 96.3 | 100.0 | 0.95 |
 | qwen-72b | r2 | 3 | 1121 | 87.8 | 60.5 | 84.5 | **70.5** | 48.8 | 49.3 | 95.5 | 96.3 | 99.8 | 0.95 |
 | qwen-72b | r3 | 1 | 1121 | 89.4 | 63.2 | 92.8 | **75.2** | 61.5 | 71.4 | 72.6 | 95.7 | 100.0 | 1.32 |
-| qwen-72b | r3 | 2 | 1105 | 88.9 | 61.7 | 90.4 | **73.3** | 60.9 | 69.3 | 58.8 | 95.6 | 100.0 | 1.31 |
-| qwen-72b | r3 | 3 | 1060 | 89.4 | 63.4 | 91.2 | **74.8** | 63.5 | 71.6 | 56.8 | 95.4 | 100.0 | 1.25 |
+| qwen-72b | r3 | 2 | 1121 | 88.8 | 62.4 | 89.7 | **73.6** | 60.9 | 69.4 | 58.7 | 95.6 | 100.0 | 1.33 |
+| qwen-72b | r3 | 3 | 1121 | 89.7 | 64.0 | 91.8 | **75.4** | 63.3 | 71.8 | 57.7 | 95.4 | 100.0 | 1.32 |
 
 ## Stability (verdict flip rate across passes)
 
@@ -32,7 +32,7 @@ Gold: 1121 units / 1586 pairs (K6–K9 provisional). Parser baseline (presegment
 - gemma-27b × r3: 7.5% of 1121 units flip across 3 passes
 - qwen-72b × r1: 9.9% of 1121 units flip across 3 passes
 - qwen-72b × r2: 10.1% of 1121 units flip across 3 passes
-- qwen-72b × r3: 7.2% of 1045 units flip across 3 passes
+- qwen-72b × r3: 7.0% of 1121 units flip across 3 passes
 
 ## Validation catch-rates (recorded, never corrected)
 
@@ -52,5 +52,5 @@ Gold: 1121 units / 1586 pairs (K6–K9 provisional). Parser baseline (presegment
 - qwen-72b × r2 × run2: {'form_at_index_mismatch': 243, 'index_out_of_bounds': 5}
 - qwen-72b × r2 × run3: {'form_at_index_mismatch': 243, 'index_out_of_bounds': 4, 'parse_malformed': 2, 'no_pairs_field': 2}
 - qwen-72b × r3 × run1: {'form_at_index_mismatch': 732, 'index_out_of_bounds': 3}
-- qwen-72b × r3 × run2: {'form_at_index_mismatch': 956, 'index_out_of_bounds': 108}
-- qwen-72b × r3 × run3: {'form_at_index_mismatch': 886, 'index_out_of_bounds': 52}
+- qwen-72b × r3 × run2: {'form_at_index_mismatch': 971, 'index_out_of_bounds': 108}
+- qwen-72b × r3 × run3: {'form_at_index_mismatch': 935, 'index_out_of_bounds': 53}
