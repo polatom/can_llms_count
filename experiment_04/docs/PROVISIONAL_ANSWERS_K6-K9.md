@@ -63,3 +63,17 @@ violates. Matches both PONK ("limit distance 6" as maximum allowed) and the prod
 - If Katka overturns K6 → re-derive gold (minutes) + re-run LLM grids (open: trivial cost;
   frontier: only what has been run by then — another reason the frontier waits).
 - If she overturns K7/K8 → rescoring only, no re-runs.
+
+
+## K11 — Jsou-li = whole word (added 2026-07-21)
+
+Confirmed verbally by Katka on the 2026-07-21 call (Tomáš relayed): the measured predicate for
+"Jsou-li/není-li"-type forms is the whole surface word, analogous to aby/kdyby.
+
+## Status: ALL K-questions closed (2026-07-21)
+
+K6/K7/K8 confirmed in writing (KH annotations above), K9 confirmed ("Všechny worked examples
+jsou dobře"), K10 answered with the elimination algorithm (see
+KATKA_K10_relative_pronouns_2026-07-21.md), K11 confirmed verbally. The §3 rule and the
+CLTT-derived gold are fully signed off; the verification sheet remains as an async
+quality-measurement task, not a blocker.
