@@ -302,11 +302,12 @@ parser arm, hand-categorized (feeds the paper's error analysis and exp_03's inve
   or `anthropic/claude-sonnet-5` ($2/$10, alternate). Final pick + provider pinning at prompt
   freeze; open ~30B/70B slots re-verified then.
 - **O5:** garbled `teaching_examples` + English-testset question → KMH.
-- **K6–K9: provisionally CLOSED by self-adjudication (2026-07-20,
-  `docs/PROVISIONAL_ANSWERS_K6-K9.md`)** — K6 one pair (first verb); K7 exclude verbless; K8
-  include rel-pron subjects in headline + separate breakdown; K9 worked examples self-reviewed.
-  The design proceeds; **Katka verifies asynchronously** — impactful reversals (only K6 touches
-  prompts) trigger a follow-up re-run, K7/K8 reversals are rescoring-only.
+- **K6–K12: ALL CONFIRMED by Katka (2026-07-21).** K6/K7/K8 confirmed in writing, K9 ("všechny
+  worked examples dobře"), K10 answered with the elimination algorithm (implemented in R4),
+  K11 confirmed verbally, K12 (quantified subjects → governing quantifier; singleton 1/1,586)
+  confirmed in the verification follow-up. **Gold verification complete: 104/105 confirmed,
+  1 genuinely ambiguous, 0 outstanding errors** (`docs/VERIFICATION_RESULTS.md`). The §3 rule,
+  the CLTT-derived gold, and its quality bound are fully signed off.
 
 **Resolved (this experiment):**
 - **O9** (2026-07-20): CLTT-primary redesign adopted (Tomáš) — power 194 vs. ~20 positives, no

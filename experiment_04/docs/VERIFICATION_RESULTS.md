@@ -1,4 +1,11 @@
-# Gold verification — results (Katka, 2026-07-21)
+# Gold verification — results (Katka, 2026-07-21) — **COMPLETE**
+
+> **Final tally after the follow-up round** (VERIFICATION_FOLLOWUP response, same day): all 11
+> previously unverifiable items **confirmed ✓**, and item 35 **confirmed under the K12 fix**.
+> Bottom line for the paper: **104/105 pairs confirmed, 1 genuinely ambiguous, 0 outstanding
+> errors**. One error was found in the original derivation (quantified subject, singleton class
+> 1/1,586), traced to a UD-convention/definition divergence, fixed mechanically, and re-verified.
+> Pre-fix error rate ≈ 1.0%; post-fix 0% with one documented ambiguity.
 
 Sheet: 105 derived pairs (all 25 rare-construction + 80 random; VERIFICATION_SHEET_katka.md).
 Response: VERIFICATION_SHEET_katka_response_2026-07-21.md.
