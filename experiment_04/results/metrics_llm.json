@@ -231,51 +231,77 @@
       "model": "gemma-27b",
       "form": "r4",
       "run": 1,
-      "n": 929,
-      "verdict_acc": 0.844994617868676,
-      "verdict_p": 0.531496062992126,
-      "verdict_r": 0.84375,
-      "verdict_f1": 0.6521739130434784,
-      "pair_p": 0.5451080050825922,
-      "pair_r": 0.6249089584850692,
-      "pair_f1": 0.5822870715982356,
-      "naming_recall": 0.6249089584850692,
-      "pos_given_named": 0.8892773892773893,
-      "dist_exact_given_named": 0.9347319347319347,
-      "dist_w1_given_named": 0.9790209790209791,
-      "dist_mae": 0.21678321678321677,
-      "parse_ok_rate": 0.9978471474703983,
+      "n": 1091,
+      "verdict_acc": 0.847846012832264,
+      "verdict_p": 0.5335570469798657,
+      "verdict_r": 0.8548387096774194,
+      "verdict_f1": 0.6570247933884297,
+      "pair_p": 0.5502762430939226,
+      "pair_r": 0.635609444798979,
+      "pair_f1": 0.5898726680485638,
+      "naming_recall": 0.635609444798979,
+      "pos_given_named": 0.8905622489959839,
+      "dist_exact_given_named": 0.9367469879518072,
+      "dist_w1_given_named": 0.9799196787148594,
+      "dist_mae": 0.19779116465863453,
+      "parse_ok_rate": 0.998166819431714,
       "val_flags": {
-        "form_at_index_mismatch": 216,
+        "form_at_index_mismatch": 250,
         "parse_malformed": 2,
         "no_pairs_field": 2,
-        "index_out_of_bounds": 3
+        "index_out_of_bounds": 6
       },
-      "cost_usd": 0.275
+      "cost_usd": 0.3211
     },
     {
       "model": "gemma-27b",
       "form": "r4",
       "run": 2,
-      "n": 34,
-      "verdict_acc": 0.8529411764705882,
-      "verdict_p": 0.5833333333333334,
-      "verdict_r": 1.0,
-      "verdict_f1": 0.7368421052631579,
-      "pair_p": 0.4166666666666667,
-      "pair_r": 0.6122448979591837,
-      "pair_f1": 0.4958677685950413,
-      "naming_recall": 0.6122448979591837,
-      "pos_given_named": 0.8666666666666667,
-      "dist_exact_given_named": 1.0,
-      "dist_w1_given_named": 1.0,
-      "dist_mae": 0.0,
+      "n": 1121,
+      "verdict_acc": 0.847457627118644,
+      "verdict_p": 0.5358255451713395,
+      "verdict_r": 0.8865979381443299,
+      "verdict_f1": 0.6679611650485435,
+      "pair_p": 0.5370177267987487,
+      "pair_r": 0.6369820655534941,
+      "pair_f1": 0.5827439886845828,
+      "naming_recall": 0.6369820655534941,
+      "pos_given_named": 0.8844660194174757,
+      "dist_exact_given_named": 0.9320388349514563,
+      "dist_w1_given_named": 0.9786407766990292,
+      "dist_mae": 0.23009708737864076,
+      "parse_ok_rate": 0.9991079393398751,
+      "val_flags": {
+        "form_at_index_mismatch": 292,
+        "parse_malformed": 1,
+        "no_pairs_field": 1,
+        "index_out_of_bounds": 5
+      },
+      "cost_usd": 0.3304
+    },
+    {
+      "model": "gemma-27b",
+      "form": "r4",
+      "run": 3,
+      "n": 1121,
+      "verdict_acc": 0.8492417484388939,
+      "verdict_p": 0.540453074433657,
+      "verdict_r": 0.8608247422680413,
+      "verdict_f1": 0.6640159045725648,
+      "pair_p": 0.5385015608740895,
+      "pair_r": 0.640074211502783,
+      "pair_f1": 0.5849109918055948,
+      "naming_recall": 0.640074211502783,
+      "pos_given_named": 0.8840579710144928,
+      "dist_exact_given_named": 0.936231884057971,
+      "dist_w1_given_named": 0.978743961352657,
+      "dist_mae": 0.17777777777777778,
       "parse_ok_rate": 1.0,
       "val_flags": {
-        "form_at_index_mismatch": 9,
-        "index_out_of_bounds": 1
+        "form_at_index_mismatch": 308,
+        "index_out_of_bounds": 6
       },
-      "cost_usd": 0.0102
+      "cost_usd": 0.3293
     },
     {
       "model": "qwen-72b",
@@ -572,6 +598,82 @@
         "index_out_of_bounds": 3
       },
       "cost_usd": 1.6735
+    },
+    {
+      "model": "qwen-72b",
+      "form": "r5",
+      "run": 1,
+      "n": 1121,
+      "verdict_acc": 0.8991971454058876,
+      "verdict_p": 0.6483516483516484,
+      "verdict_r": 0.9123711340206185,
+      "verdict_f1": 0.7580299785867238,
+      "pair_p": 0.6067302862882974,
+      "pair_r": 0.7470624613481757,
+      "pair_f1": 0.6696230598669624,
+      "naming_recall": 0.7470624613481757,
+      "pos_given_named": 0.695364238410596,
+      "dist_exact_given_named": 0.9445364238410596,
+      "dist_w1_given_named": 0.9817880794701986,
+      "dist_mae": 0.15480132450331127,
+      "parse_ok_rate": 1.0,
+      "val_flags": {
+        "form_at_index_mismatch": 711,
+        "index_out_of_bounds": 5
+      },
+      "cost_usd": 1.9655
+    },
+    {
+      "model": "qwen-72b",
+      "form": "r5",
+      "run": 2,
+      "n": 1121,
+      "verdict_acc": 0.8974130240856378,
+      "verdict_p": 0.6425992779783394,
+      "verdict_r": 0.9175257731958762,
+      "verdict_f1": 0.7558386411889597,
+      "pair_p": 0.6198050282195998,
+      "pair_r": 0.7470624613481757,
+      "pair_f1": 0.6775098149186763,
+      "naming_recall": 0.7470624613481757,
+      "pos_given_named": 0.9337748344370861,
+      "dist_exact_given_named": 0.9461920529801324,
+      "dist_w1_given_named": 0.9817880794701986,
+      "dist_mae": 0.12334437086092716,
+      "parse_ok_rate": 0.9982158786797503,
+      "val_flags": {
+        "form_at_index_mismatch": 268,
+        "index_out_of_bounds": 5,
+        "parse_malformed": 2,
+        "no_pairs_field": 2
+      },
+      "cost_usd": 1.9609
+    },
+    {
+      "model": "qwen-72b",
+      "form": "r5",
+      "run": 3,
+      "n": 1120,
+      "verdict_acc": 0.8964285714285715,
+      "verdict_p": 0.6413043478260869,
+      "verdict_r": 0.9123711340206185,
+      "verdict_f1": 0.7531914893617022,
+      "pair_p": 0.6183476938672073,
+      "pair_r": 0.7544836116264688,
+      "pair_f1": 0.6796657381615598,
+      "naming_recall": 0.7544836116264688,
+      "pos_given_named": 0.9377049180327869,
+      "dist_exact_given_named": 0.9442622950819672,
+      "dist_w1_given_named": 0.978688524590164,
+      "dist_mae": 0.14754098360655737,
+      "parse_ok_rate": 0.9991071428571429,
+      "val_flags": {
+        "form_at_index_mismatch": 223,
+        "index_out_of_bounds": 7,
+        "parse_malformed": 1,
+        "no_pairs_field": 1
+      },
+      "cost_usd": 1.9649
     }
   ],
   "stability": [
@@ -599,9 +701,9 @@
     [
       "gemma-27b",
       "r4",
-      2,
-      30,
-      0.03333333333333333
+      3,
+      1091,
+      0.07882676443629698
     ],
     [
       "qwen-72b",
@@ -630,6 +732,13 @@
       3,
       1121,
       0.05352363960749331
+    ],
+    [
+      "qwen-72b",
+      "r5",
+      3,
+      1120,
+      0.05892857142857143
     ]
   ]
 }

@@ -38,7 +38,9 @@ def build_request_body(model: dict, messages: list[dict], cfg: dict) -> dict:
         "model": model["slug"],
         "messages": messages,
         "temperature": cfg["temperature"],
-        "max_tokens": cfg["max_tokens"],
+        # reasoning models need far larger budgets (probe v1 lesson: 76/104
+        # truncated at 6k with reasoning consuming ~5.4k) -> per-model override
+        "max_tokens": model.get("max_tokens", cfg["max_tokens"]),
         "usage": {"include": True},
     }
     if model.get("reasoning") is not None:

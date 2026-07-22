@@ -32,7 +32,8 @@
         "effort": "none"
       },
       "enabled": false,
-      "_note": "reasoning-off mode; enable after open-model results (O2: alternate anthropic/claude-sonnet-5)"
+      "_note": "reasoning-off mode; enable after open-model results (O2: alternate anthropic/claude-sonnet-5)",
+      "max_tokens": 24000
     },
     {
       "model_id": "frontier-reasoning",
@@ -42,7 +43,8 @@
         "effort": "high"
       },
       "enabled": false,
-      "_note": "reasoning-on mode; possibly sample or hard-cases-only per decision 2026-07-20"
+      "_note": "reasoning-on mode; possibly sample or hard-cases-only per decision 2026-07-20",
+      "max_tokens": 24000
     }
   ],
   "formulations": {

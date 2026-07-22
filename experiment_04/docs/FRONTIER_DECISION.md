@@ -59,3 +59,28 @@ either way, and directly testable post hoc from the full-grid data (which C itse
   QUESTIONS doc.
 - Run traces (59 MB): kept out of git for now; decision on archiving (compress + commit vs.
   external storage) with the final data release.
+
+---
+
+## UPDATE 2026-07-22 — probe verdict: the gap IS capability-bound
+
+**Open-model chapter closed.** Final prompt ladder (qwen-72b, verdict F1): R1 58.5 → R2 72.5 →
+R3 74.7 → R4 **76.5** → R5 76.0 (plateau; the targeted precision rules changed nothing — the
+stable fabrication classes resist explicit instruction at 72B). Voting ceiling 78.3. gemma-27b
+R4: 66.3. Parser baseline: 97.1.
+
+**Frontier probe v2** (gpt-5.1 reasoning-high, R4 prompt, 24k token budget, $9.96): on the 104
+sentences qwen-72b gets wrong in ≥2/3 passes — the systematically hard set — the frontier is
+**102/104 (98%) correct at the verdict level, with ZERO false positives** (all 94 of qwen's
+false-flag sentences resolved clean; 8/10 violations caught) and **pair-level P 94% / R 96%**.
+The convention-discipline failures and monster-recall losses that no prompt could fix at 72B
+essentially vanish with frontier capability + reasoning.
+
+(Probe v1 at the default 6k budget was invalidated — 76/104 truncated by reasoning tokens;
+lesson encoded as per-model max_tokens=24000.)
+
+**Consequence:** the full frontier run is de-risked — parser parity (±ε) is the *expected*
+outcome, not a gamble. Options A/B stand as costed above (reasoning output will run ~2× prior
+estimate due to the 24k budgets; A ≈ $350–450, B ≈ $180–250). The scientific payoff flipped:
+before the probe the full run risked an expensive null; now it likely *measures where frontier
+parity sits relative to 97.1*, which is the paper's headline either way.
