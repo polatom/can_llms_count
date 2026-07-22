@@ -231,27 +231,27 @@
       "model": "gemma-27b",
       "form": "r4",
       "run": 1,
-      "n": 1091,
-      "verdict_acc": 0.847846012832264,
-      "verdict_p": 0.5335570469798657,
-      "verdict_r": 0.8548387096774194,
-      "verdict_f1": 0.6570247933884297,
-      "pair_p": 0.5502762430939226,
-      "pair_r": 0.635609444798979,
-      "pair_f1": 0.5898726680485638,
-      "naming_recall": 0.635609444798979,
-      "pos_given_named": 0.8905622489959839,
-      "dist_exact_given_named": 0.9367469879518072,
-      "dist_w1_given_named": 0.9799196787148594,
-      "dist_mae": 0.19779116465863453,
-      "parse_ok_rate": 0.998166819431714,
+      "n": 1105,
+      "verdict_acc": 0.8497737556561086,
+      "verdict_p": 0.5397350993377483,
+      "verdict_r": 0.8578947368421053,
+      "verdict_f1": 0.6626016260162602,
+      "pair_p": 0.5504637206764866,
+      "pair_r": 0.6349905601006922,
+      "pair_f1": 0.5897136177673875,
+      "naming_recall": 0.6349905601006922,
+      "pos_given_named": 0.8909811694747275,
+      "dist_exact_given_named": 0.9375619425173439,
+      "dist_w1_given_named": 0.9801783944499505,
+      "dist_mae": 0.1952428146679881,
+      "parse_ok_rate": 0.9981900452488688,
       "val_flags": {
-        "form_at_index_mismatch": 250,
+        "form_at_index_mismatch": 256,
         "parse_malformed": 2,
         "no_pairs_field": 2,
         "index_out_of_bounds": 6
       },
-      "cost_usd": 0.3211
+      "cost_usd": 0.3252
     },
     {
       "model": "gemma-27b",
@@ -302,6 +302,84 @@
         "index_out_of_bounds": 6
       },
       "cost_usd": 0.3293
+    },
+    {
+      "model": "gpt5-mini",
+      "form": "r4",
+      "run": 1,
+      "n": 1121,
+      "verdict_acc": 0.9776984834968778,
+      "verdict_p": 0.9378238341968912,
+      "verdict_r": 0.9329896907216495,
+      "verdict_f1": 0.9354005167958656,
+      "pair_p": 0.7360759493670886,
+      "pair_r": 0.7192331478045764,
+      "pair_f1": 0.7275570847669689,
+      "naming_recall": 0.7192331478045764,
+      "pos_given_named": 0.8710232158211522,
+      "dist_exact_given_named": 0.9836629406706793,
+      "dist_w1_given_named": 0.9974204643164231,
+      "dist_mae": 0.04557179707652623,
+      "parse_ok_rate": 0.9892952720785013,
+      "val_flags": {
+        "form_at_index_mismatch": 377,
+        "parse_malformed": 12,
+        "no_pairs_field": 12,
+        "index_out_of_bounds": 5
+      },
+      "cost_usd": 2.5572
+    },
+    {
+      "model": "gpt5-mini",
+      "form": "r4",
+      "run": 2,
+      "n": 1121,
+      "verdict_acc": 0.9643175735950045,
+      "verdict_p": 0.885,
+      "verdict_r": 0.9123711340206185,
+      "verdict_f1": 0.8984771573604061,
+      "pair_p": 0.750788643533123,
+      "pair_r": 0.7359307359307359,
+      "pair_f1": 0.7432854465958775,
+      "naming_recall": 0.7359307359307359,
+      "pos_given_named": 0.8756302521008403,
+      "dist_exact_given_named": 0.9823529411764705,
+      "dist_w1_given_named": 0.9941176470588236,
+      "dist_mae": 0.04285714285714286,
+      "parse_ok_rate": 0.9830508474576272,
+      "val_flags": {
+        "form_at_index_mismatch": 335,
+        "parse_malformed": 19,
+        "no_pairs_field": 19,
+        "index_out_of_bounds": 5
+      },
+      "cost_usd": 2.6111
+    },
+    {
+      "model": "gpt5-mini",
+      "form": "r4",
+      "run": 3,
+      "n": 1121,
+      "verdict_acc": 0.9776984834968778,
+      "verdict_p": 0.9333333333333333,
+      "verdict_r": 0.9381443298969072,
+      "verdict_f1": 0.9357326478149101,
+      "pair_p": 0.7406230133502861,
+      "pair_r": 0.7204700061842919,
+      "pair_f1": 0.7304075235109718,
+      "naming_recall": 0.7204700061842919,
+      "pos_given_named": 0.8600858369098713,
+      "dist_exact_given_named": 0.975107296137339,
+      "dist_w1_given_named": 0.9974248927038627,
+      "dist_mae": 0.04463519313304721,
+      "parse_ok_rate": 0.9866190900981266,
+      "val_flags": {
+        "form_at_index_mismatch": 368,
+        "parse_malformed": 15,
+        "no_pairs_field": 15,
+        "index_out_of_bounds": 2
+      },
+      "cost_usd": 2.6275
     },
     {
       "model": "qwen-72b",
@@ -653,8 +731,8 @@
       "model": "qwen-72b",
       "form": "r5",
       "run": 3,
-      "n": 1120,
-      "verdict_acc": 0.8964285714285715,
+      "n": 1121,
+      "verdict_acc": 0.8965209634255129,
       "verdict_p": 0.6413043478260869,
       "verdict_r": 0.9123711340206185,
       "verdict_f1": 0.7531914893617022,
@@ -666,14 +744,91 @@
       "dist_exact_given_named": 0.9442622950819672,
       "dist_w1_given_named": 0.978688524590164,
       "dist_mae": 0.14754098360655737,
-      "parse_ok_rate": 0.9991071428571429,
+      "parse_ok_rate": 0.9991079393398751,
       "val_flags": {
         "form_at_index_mismatch": 223,
         "index_out_of_bounds": 7,
         "parse_malformed": 1,
         "no_pairs_field": 1
       },
-      "cost_usd": 1.9649
+      "cost_usd": 1.9664
+    },
+    {
+      "model": "qwen3-235b",
+      "form": "r4",
+      "run": 1,
+      "n": 1121,
+      "verdict_acc": 0.9509366636931311,
+      "verdict_p": 0.8325358851674641,
+      "verdict_r": 0.8969072164948454,
+      "verdict_f1": 0.8635235732009926,
+      "pair_p": 0.765468473777254,
+      "pair_r": 0.8033395176252319,
+      "pair_f1": 0.783946891973446,
+      "naming_recall": 0.8033395176252319,
+      "pos_given_named": 0.3625866050808314,
+      "dist_exact_given_named": 0.9838337182448037,
+      "dist_w1_given_named": 0.9946112394149346,
+      "dist_mae": 0.044649730561970746,
+      "parse_ok_rate": 0.9884032114183765,
+      "val_flags": {
+        "index_out_of_bounds": 5,
+        "form_at_index_mismatch": 1113,
+        "parse_malformed": 13,
+        "no_pairs_field": 13
+      },
+      "cost_usd": 1.1447
+    },
+    {
+      "model": "qwen3-235b",
+      "form": "r4",
+      "run": 2,
+      "n": 1121,
+      "verdict_acc": 0.9500446030330062,
+      "verdict_p": 0.8136363636363636,
+      "verdict_r": 0.9226804123711341,
+      "verdict_f1": 0.8647342995169082,
+      "pair_p": 0.7498525073746313,
+      "pair_r": 0.7860235003092146,
+      "pair_f1": 0.767512077294686,
+      "naming_recall": 0.7860235003092146,
+      "pos_given_named": 0.3752950432730134,
+      "dist_exact_given_named": 0.980330448465775,
+      "dist_w1_given_named": 0.99213217938631,
+      "dist_mae": 0.11565696302124312,
+      "parse_ok_rate": 0.9901873327386262,
+      "val_flags": {
+        "form_at_index_mismatch": 1103,
+        "parse_malformed": 11,
+        "no_pairs_field": 11,
+        "index_out_of_bounds": 8
+      },
+      "cost_usd": 1.126
+    },
+    {
+      "model": "qwen3-235b",
+      "form": "r4",
+      "run": 3,
+      "n": 305,
+      "verdict_acc": 0.9639344262295082,
+      "verdict_p": 0.8431372549019608,
+      "verdict_r": 0.9347826086956522,
+      "verdict_f1": 0.8865979381443299,
+      "pair_p": 0.7888040712468194,
+      "pair_r": 0.773067331670823,
+      "pair_f1": 0.7808564231738035,
+      "naming_recall": 0.773067331670823,
+      "pos_given_named": 0.32903225806451614,
+      "dist_exact_given_named": 0.9838709677419355,
+      "dist_w1_given_named": 0.9903225806451613,
+      "dist_mae": 0.035483870967741936,
+      "parse_ok_rate": 0.9770491803278688,
+      "val_flags": {
+        "form_at_index_mismatch": 268,
+        "parse_malformed": 7,
+        "no_pairs_field": 7
+      },
+      "cost_usd": 0.2927
     }
   ],
   "stability": [
@@ -702,8 +857,15 @@
       "gemma-27b",
       "r4",
       3,
-      1091,
-      0.07882676443629698
+      1105,
+      0.07963800904977375
+    ],
+    [
+      "gpt5-mini",
+      "r4",
+      3,
+      1121,
+      0.042818911685994644
     ],
     [
       "qwen-72b",
@@ -737,8 +899,15 @@
       "qwen-72b",
       "r5",
       3,
-      1120,
-      0.05892857142857143
+      1121,
+      0.058876003568242644
+    ],
+    [
+      "qwen3-235b",
+      "r4",
+      3,
+      305,
+      0.07868852459016394
     ]
   ]
 }

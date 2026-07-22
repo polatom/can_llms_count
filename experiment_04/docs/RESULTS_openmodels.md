@@ -15,9 +15,12 @@ Gold: 1121 units / 1617 pairs (K6–K9 provisional). Parser baseline (presegment
 | gemma-27b | r3 | 1 | 1121 | 83.1 | 50.7 | 88.1 | **64.4** | 56.9 | 64.0 | 92.9 | 93.8 | 99.9 | 0.27 |
 | gemma-27b | r3 | 2 | 1121 | 82.4 | 49.6 | 86.6 | **63.0** | 56.0 | 63.5 | 93.2 | 93.2 | 100.0 | 0.27 |
 | gemma-27b | r3 | 3 | 1121 | 82.5 | 49.7 | 87.6 | **63.4** | 57.0 | 64.6 | 93.1 | 93.3 | 99.9 | 0.27 |
-| gemma-27b | r4 | 1 | 1091 | 84.8 | 53.4 | 85.5 | **65.7** | 59.0 | 63.6 | 89.1 | 93.7 | 99.8 | 0.32 |
+| gemma-27b | r4 | 1 | 1105 | 85.0 | 54.0 | 85.8 | **66.3** | 59.0 | 63.5 | 89.1 | 93.8 | 99.8 | 0.33 |
 | gemma-27b | r4 | 2 | 1121 | 84.7 | 53.6 | 88.7 | **66.8** | 58.3 | 63.7 | 88.4 | 93.2 | 99.9 | 0.33 |
 | gemma-27b | r4 | 3 | 1121 | 84.9 | 54.0 | 86.1 | **66.4** | 58.5 | 64.0 | 88.4 | 93.6 | 100.0 | 0.33 |
+| gpt5-mini | r4 | 1 | 1121 | 97.8 | 93.8 | 93.3 | **93.5** | 72.8 | 71.9 | 87.1 | 98.4 | 98.9 | 2.56 |
+| gpt5-mini | r4 | 2 | 1121 | 96.4 | 88.5 | 91.2 | **89.8** | 74.3 | 73.6 | 87.6 | 98.2 | 98.3 | 2.61 |
+| gpt5-mini | r4 | 3 | 1121 | 97.8 | 93.3 | 93.8 | **93.6** | 73.0 | 72.0 | 86.0 | 97.5 | 98.7 | 2.63 |
 | qwen-72b | r1 | 1 | 1121 | 80.5 | 46.5 | 84.5 | **60.0** | 29.6 | 26.9 | 14.0 | 31.5 | 100.0 | 0.58 |
 | qwen-72b | r1 | 2 | 1121 | 78.9 | 44.2 | 82.5 | **57.6** | 28.6 | 25.7 | 13.0 | 28.9 | 99.9 | 0.58 |
 | qwen-72b | r1 | 3 | 1121 | 79.4 | 44.8 | 82.0 | **57.9** | 28.3 | 25.9 | 14.6 | 28.7 | 99.8 | 0.59 |
@@ -32,19 +35,24 @@ Gold: 1121 units / 1617 pairs (K6–K9 provisional). Parser baseline (presegment
 | qwen-72b | r4 | 3 | 1121 | 90.4 | 65.2 | 94.8 | **77.3** | 67.5 | 76.3 | 49.4 | 94.8 | 100.0 | 1.67 |
 | qwen-72b | r5 | 1 | 1121 | 89.9 | 64.8 | 91.2 | **75.8** | 67.0 | 74.7 | 69.5 | 94.5 | 100.0 | 1.97 |
 | qwen-72b | r5 | 2 | 1121 | 89.7 | 64.3 | 91.8 | **75.6** | 67.8 | 74.7 | 93.4 | 94.6 | 99.8 | 1.96 |
-| qwen-72b | r5 | 3 | 1120 | 89.6 | 64.1 | 91.2 | **75.3** | 68.0 | 75.4 | 93.8 | 94.4 | 99.9 | 1.96 |
+| qwen-72b | r5 | 3 | 1121 | 89.7 | 64.1 | 91.2 | **75.3** | 68.0 | 75.4 | 93.8 | 94.4 | 99.9 | 1.97 |
+| qwen3-235b | r4 | 1 | 1121 | 95.1 | 83.3 | 89.7 | **86.4** | 78.4 | 80.3 | 36.3 | 98.4 | 98.8 | 1.14 |
+| qwen3-235b | r4 | 2 | 1121 | 95.0 | 81.4 | 92.3 | **86.5** | 76.8 | 78.6 | 37.5 | 98.0 | 99.0 | 1.13 |
+| qwen3-235b | r4 | 3 | 305 | 96.4 | 84.3 | 93.5 | **88.7** | 78.1 | 77.3 | 32.9 | 98.4 | 97.7 | 0.29 |
 
 ## Stability (verdict flip rate across passes)
 
 - gemma-27b × r1: 8.8% of 1121 units flip across 3 passes
 - gemma-27b × r2: 11.2% of 1121 units flip across 3 passes
 - gemma-27b × r3: 7.5% of 1121 units flip across 3 passes
-- gemma-27b × r4: 7.9% of 1091 units flip across 3 passes
+- gemma-27b × r4: 8.0% of 1105 units flip across 3 passes
+- gpt5-mini × r4: 4.3% of 1121 units flip across 3 passes
 - qwen-72b × r1: 9.9% of 1121 units flip across 3 passes
 - qwen-72b × r2: 10.1% of 1121 units flip across 3 passes
 - qwen-72b × r3: 7.0% of 1121 units flip across 3 passes
 - qwen-72b × r4: 5.4% of 1121 units flip across 3 passes
-- qwen-72b × r5: 5.9% of 1120 units flip across 3 passes
+- qwen-72b × r5: 5.9% of 1121 units flip across 3 passes
+- qwen3-235b × r4: 7.9% of 305 units flip across 3 passes
 
 ## Validation catch-rates (recorded, never corrected)
 
@@ -57,9 +65,12 @@ Gold: 1121 units / 1617 pairs (K6–K9 provisional). Parser baseline (presegment
 - gemma-27b × r3 × run1: {'form_at_index_mismatch': 282, 'parse_malformed': 1, 'no_pairs_field': 1, 'index_out_of_bounds': 10, 'nonint_index': 3}
 - gemma-27b × r3 × run2: {'form_at_index_mismatch': 284, 'index_out_of_bounds': 15, 'nonint_index': 2}
 - gemma-27b × r3 × run3: {'form_at_index_mismatch': 279, 'parse_malformed': 1, 'no_pairs_field': 1, 'index_out_of_bounds': 20, 'nonint_index': 7}
-- gemma-27b × r4 × run1: {'form_at_index_mismatch': 250, 'parse_malformed': 2, 'no_pairs_field': 2, 'index_out_of_bounds': 6}
+- gemma-27b × r4 × run1: {'form_at_index_mismatch': 256, 'parse_malformed': 2, 'no_pairs_field': 2, 'index_out_of_bounds': 6}
 - gemma-27b × r4 × run2: {'form_at_index_mismatch': 292, 'parse_malformed': 1, 'no_pairs_field': 1, 'index_out_of_bounds': 5}
 - gemma-27b × r4 × run3: {'form_at_index_mismatch': 308, 'index_out_of_bounds': 6}
+- gpt5-mini × r4 × run1: {'form_at_index_mismatch': 377, 'parse_malformed': 12, 'no_pairs_field': 12, 'index_out_of_bounds': 5}
+- gpt5-mini × r4 × run2: {'form_at_index_mismatch': 335, 'parse_malformed': 19, 'no_pairs_field': 19, 'index_out_of_bounds': 5}
+- gpt5-mini × r4 × run3: {'form_at_index_mismatch': 368, 'parse_malformed': 15, 'no_pairs_field': 15, 'index_out_of_bounds': 2}
 - qwen-72b × r1 × run1: {'index_out_of_bounds': 37, 'form_at_index_mismatch': 1160}
 - qwen-72b × r1 × run2: {'index_out_of_bounds': 43, 'form_at_index_mismatch': 1141, 'parse_malformed': 1, 'no_pairs_field': 1}
 - qwen-72b × r1 × run3: {'form_at_index_mismatch': 1172, 'index_out_of_bounds': 43, 'parse_malformed': 2, 'no_pairs_field': 2}
@@ -75,3 +86,6 @@ Gold: 1121 units / 1617 pairs (K6–K9 provisional). Parser baseline (presegment
 - qwen-72b × r5 × run1: {'form_at_index_mismatch': 711, 'index_out_of_bounds': 5}
 - qwen-72b × r5 × run2: {'form_at_index_mismatch': 268, 'index_out_of_bounds': 5, 'parse_malformed': 2, 'no_pairs_field': 2}
 - qwen-72b × r5 × run3: {'form_at_index_mismatch': 223, 'index_out_of_bounds': 7, 'parse_malformed': 1, 'no_pairs_field': 1}
+- qwen3-235b × r4 × run1: {'index_out_of_bounds': 5, 'form_at_index_mismatch': 1113, 'parse_malformed': 13, 'no_pairs_field': 13}
+- qwen3-235b × r4 × run2: {'form_at_index_mismatch': 1103, 'parse_malformed': 11, 'no_pairs_field': 11, 'index_out_of_bounds': 8}
+- qwen3-235b × r4 × run3: {'form_at_index_mismatch': 268, 'parse_malformed': 7, 'no_pairs_field': 7}
