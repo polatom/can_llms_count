@@ -38,7 +38,7 @@ Gold: 1121 units / 1617 pairs (K6–K9 provisional). Parser baseline (presegment
 | qwen-72b | r5 | 3 | 1121 | 89.7 | 64.1 | 91.2 | **75.3** | 68.0 | 75.4 | 93.8 | 94.4 | 99.9 | 1.97 |
 | qwen3-235b | r4 | 1 | 1121 | 95.1 | 83.3 | 89.7 | **86.4** | 78.4 | 80.3 | 36.3 | 98.4 | 98.8 | 1.14 |
 | qwen3-235b | r4 | 2 | 1121 | 95.0 | 81.4 | 92.3 | **86.5** | 76.8 | 78.6 | 37.5 | 98.0 | 99.0 | 1.13 |
-| qwen3-235b | r4 | 3 | 305 | 96.4 | 84.3 | 93.5 | **88.7** | 78.1 | 77.3 | 32.9 | 98.4 | 97.7 | 0.29 |
+| qwen3-235b | r4 | 3 | 1121 | 95.5 | 83.9 | 91.2 | **87.4** | 78.1 | 80.8 | 35.0 | 97.9 | 98.5 | 1.12 |
 
 ## Stability (verdict flip rate across passes)
 
@@ -52,7 +52,7 @@ Gold: 1121 units / 1617 pairs (K6–K9 provisional). Parser baseline (presegment
 - qwen-72b × r3: 7.0% of 1121 units flip across 3 passes
 - qwen-72b × r4: 5.4% of 1121 units flip across 3 passes
 - qwen-72b × r5: 5.9% of 1121 units flip across 3 passes
-- qwen3-235b × r4: 7.9% of 305 units flip across 3 passes
+- qwen3-235b × r4: 7.6% of 1121 units flip across 3 passes
 
 ## Validation catch-rates (recorded, never corrected)
 
@@ -88,4 +88,4 @@ Gold: 1121 units / 1617 pairs (K6–K9 provisional). Parser baseline (presegment
 - qwen-72b × r5 × run3: {'form_at_index_mismatch': 223, 'index_out_of_bounds': 7, 'parse_malformed': 1, 'no_pairs_field': 1}
 - qwen3-235b × r4 × run1: {'index_out_of_bounds': 5, 'form_at_index_mismatch': 1113, 'parse_malformed': 13, 'no_pairs_field': 13}
 - qwen3-235b × r4 × run2: {'form_at_index_mismatch': 1103, 'parse_malformed': 11, 'no_pairs_field': 11, 'index_out_of_bounds': 8}
-- qwen3-235b × r4 × run3: {'form_at_index_mismatch': 268, 'parse_malformed': 7, 'no_pairs_field': 7}
+- qwen3-235b × r4 × run3: {'form_at_index_mismatch': 1164, 'parse_malformed': 17, 'no_pairs_field': 17, 'index_out_of_bounds': 2}

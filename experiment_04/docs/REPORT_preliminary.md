@@ -205,15 +205,14 @@ Fixing the formulation at R4 and varying only the model (full three-pass grids):
 |---|---|--:|--:|
 | gemma-3-27B | open weights | 66.5 | 58.6 |
 | Qwen-2.5-72B | open weights | 76.5 | 67.4 |
-| Qwen3-235B-Instruct | open weights | **87.2**† | 78.1 |
+| Qwen3-235B-Instruct | open weights | **86.7** | 77.7 |
 | gpt-5-mini | mid-frontier API | **92.3** | 73.4 |
 | *parser (UDPipe + code)* | deterministic | **97.1** | 96.5 |
 
-† third pass completing at writing time (first two passes: 86.4 / 86.5).
-
 Above 72B, capability — not prompt wording — is the dominant dial. Notably, a **$0.25-per-
 million-token mid-frontier model lands within five points of the parser**, and the open-weights
-family alone climbs 66 → 76 → 87 with the identical prompt.
+family alone climbs 66 → 76 → 87 with the identical prompt (all grids complete, three
+passes each; the 235B ran its entire 3,363-call grid without a single API failure).
 
 ## 7. Frontier probes: cheap answers to two expensive questions
 
