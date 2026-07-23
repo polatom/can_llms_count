@@ -4,8 +4,25 @@
 *This report is written for colleagues who were not part of the day-to-day work; it tells the
 whole story so that we can agree on a clean design for the paper. Everything is reproducible
 from the repository (`experiment_04/`): every number traces back to stored raw model outputs,
-and every design decision has a dated record. Results are essentially final; two small items
-were completing at writing time and are marked as such.*
+and every design decision has a dated record. All runs are complete.*
+
+## Executive summary
+
+We asked whether a **pure-LLM rule** — a sentence in, a verdict out, deployable in SPRINT today
+by editing rule text — can measure subject–predicate distance in *unfiltered* Czech legal text
+as well as the deterministic UDPipe-based pipeline (our baseline: **97.1 verdict F1**). Two
+things decide the answer. **(1) How the rule is written.** LLMs cannot reliably count, but a
+prompt that makes the model number the words and read positions off its own list fixes this
+almost completely (distance accuracy on found pairs rises from ~30% to ~97%); and *precise
+linguistic definitions matter enormously* — the current production rule fails even on a frontier
+model. **(2) Model capability.** With our best rule, verdict F1 climbs **66 → 76 → 87 → 92**
+across 27B, 72B, 235B (open weights) and a mid-frontier API model, and targeted probes indicate
+a frontier reasoning model reaches parser parity. **For SPRINT:** a well-written rule
+("Katka-grade" definitions plus a counting scaffold) on a mid-to-large model already gives
+usable, recall-oriented flagging (~93% recall) at ~$1–2 per 1,000 sentences; the deterministic
+pipeline stays the accuracy champion where engineering effort is available. As a by-product we
+built and independently verified a 1,617-pair gold standard (and found two bugs in the source
+treebank). The entire study cost ≈ $64.
 
 ---
 
